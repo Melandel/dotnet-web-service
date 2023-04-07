@@ -1,3 +1,7 @@
+```text
+Current Status: Proposal - By: Minh-Tâm - Since: 2023-04-07
+```
+
 ## 📋 Context and Problem Statement
 > **Which top-level filesystem structure should the repository follow?**
 
