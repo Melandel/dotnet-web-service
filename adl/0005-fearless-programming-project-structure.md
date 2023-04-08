@@ -24,4 +24,3 @@ Decision taken:
 * **_Option 3: put tests, mutualize test data and mutualize `system-under-test` instantiation_**
   * ✅ test data is reusable
   * ✅ `system-under-test` instantiation is cheap to modify
-
