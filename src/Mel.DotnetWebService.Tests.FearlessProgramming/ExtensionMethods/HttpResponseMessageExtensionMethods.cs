@@ -38,4 +38,3 @@ static class HttpResponseMessageExtensionMethods
 		}
 	}
 }
-
