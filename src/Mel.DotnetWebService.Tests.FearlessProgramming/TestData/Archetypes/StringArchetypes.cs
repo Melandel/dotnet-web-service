@@ -17,4 +17,7 @@ public static class StringArchetype
 	public const string Baz = "baz";
 	public const string Qux = "qux";
 	public const string Quux = "quux";
+
+	public static string CurrentNamespacePrefix(int numberOfNamespaceComponents)
+	=> string.Join('.', typeof(StringArchetype).Namespace.Split('.').Take(numberOfNamespaceComponents));
 }

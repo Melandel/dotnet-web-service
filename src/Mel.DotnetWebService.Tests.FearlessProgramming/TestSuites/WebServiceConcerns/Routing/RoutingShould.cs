@@ -3,7 +3,7 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceCo
 class RoutingShould : TestSuiteUsingTestServer
 {
 	[Test]
-	public async Task Create_Urls_Using_KebabCase_AKA_Hyphen_Separated_Lower_Case_Words()
+	public async Task Create_Urls_With_Api_Prefix_And_KebabCase_AKA_Hyphen_Separated_Lower_Case_Words()
 	{
 		// Arrange
 		var controllerMethod = nameof(ControllerTestDoubles.StubbedEndpointsSpecificallyCreatedForTests.HelloWorld);
@@ -17,4 +17,3 @@ class RoutingShould : TestSuiteUsingTestServer
 		Assert.That(response, Is.EqualTo("hello world"));
 	}
 }
-
