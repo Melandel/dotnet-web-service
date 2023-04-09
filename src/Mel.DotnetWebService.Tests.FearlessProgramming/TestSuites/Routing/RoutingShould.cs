@@ -3,10 +3,10 @@
 class RoutingShould : TestSuiteUsingTestServer
 {
 	[Test]
-	public async Task Create_Urls_Using_KebabCase_AKA_Hyphen_Separated_Lower_Case_Words()
+	public async Task Create_Urls_With_Api_Prefix_And_KebabCase_AKA_Hyphen_Separated_Lower_Case_Words()
 	{
 		// Arrange
-		var requestUri = "stubbed-endpoints-specifically-created-for-tests/hello-world";
+		var requestUri = "api/stubbed-endpoints-specifically-created-for-tests/hello-world";
 
 		// Act
 		var httpResponse = await TestServer.HttpClient.GetAsync(requestUri);
@@ -17,4 +17,3 @@ class RoutingShould : TestSuiteUsingTestServer
 		Assert.That(response, Is.EqualTo("hello world"));
 	}
 }
-
