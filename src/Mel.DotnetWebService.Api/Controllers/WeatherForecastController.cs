@@ -2,9 +2,7 @@
 
 namespace Mel.DotnetWebService.Api.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class WeatherForecastController : ApiController
 {
 	static readonly string[] Summaries = new[]
 	{
