@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestServers;
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestDoubles;
 
 internal class InMemoryTestServer : WebApplicationFactory<Program>
 {

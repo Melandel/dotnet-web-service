@@ -9,4 +9,3 @@ class ApplicationFeatureProviderThatAddsController<TController> : IApplicationFe
 	public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
 	=> feature.Controllers.Add(typeof(TController).GetTypeInfo());
 }
-
