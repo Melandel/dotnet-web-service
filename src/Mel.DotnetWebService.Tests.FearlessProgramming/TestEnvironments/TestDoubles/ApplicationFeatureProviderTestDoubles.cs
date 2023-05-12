@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles;
 
-internal static class ApplicationFeatureProviderTestDouble
+static class ApplicationFeatureProviderTestDouble
 {
 	public static IApplicationFeatureProvider<ControllerFeature> That_Adds_Controller<TController>()
 		where TController : Microsoft.AspNetCore.Mvc.ControllerBase
