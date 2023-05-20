@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Mel.DotnetWebService.Api.Middlewares;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Rewrite;
 
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
@@ -37,6 +38,14 @@ public static class WebApplicationExtensionMethods
 			.AddRedirect("^index.html$", SwaggerRoute);
 
 		app.UseRewriter(rewriteOptions);
+
+		return app;
+	}
+
+	public static WebApplication UseCustomControllers(this WebApplication app)
+	{
+		app.UseMiddleware<ReturnEmpty404OrEmpty405DependingOnEndpointResolutionOutcome>();
+		app.MapControllers();
 
 		return app;
 	}
