@@ -40,4 +40,12 @@ static class WebApplicationExtensionMethods
 
 		return app;
 	}
+
+	public static WebApplication UseCustomControllers(this WebApplication app)
+	{
+		app.UseMiddleware<Concerns.Routing.Middlewares.ReturnEmpty404OrEmpty405DependingOnEndpointResolutionOutcome>();
+		app.MapControllers();
+
+		return app;
+	}
 }
