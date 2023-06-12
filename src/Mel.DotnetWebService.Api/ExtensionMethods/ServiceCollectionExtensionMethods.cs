@@ -1,4 +1,4 @@
-﻿namespace Mel.DotnetWebService.Api.ExtensionMethods;
+namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
 {
@@ -15,7 +15,8 @@ static class ServiceCollectionExtensionMethods
 	public static IServiceCollection AddCustomSwaggerUI(this IServiceCollection services)
 	{
 		services
-			.ConfigureOptions<Concerns.SwaggerUI.CollapseSwaggerUiSectionsForReadability>();
+			.ConfigureOptions<Concerns.SwaggerUI.SetSwaggerUiRoutePrefix>()
+			.ConfigureOptions<Concerns.SwaggerUI.Layout.CollapseSwaggerUiSectionsForReadability>();
 
 		return services;
 	}
