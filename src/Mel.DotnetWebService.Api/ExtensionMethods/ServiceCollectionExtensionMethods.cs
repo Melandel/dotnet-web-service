@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Mel.DotnetWebService.Api.Controllers;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -25,6 +26,20 @@ public static class ServiceCollectionExtensionMethods
 	{
 		services.AddControllers();
 		services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ReportApiVersions = true);
+		return services;
+	}
+
+	public static IServiceCollection AddCustomExceptionHandlingCompliantWithRfc9457(this IServiceCollection services)
+	{
+		services.AddProblemDetails();
+		services.AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware();
+		return services;
+	}
+
+	public static IServiceCollection AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware(this IServiceCollection services)
+	{
+		services.AddHttpContextAccessor();
+		services.AddScoped<HttpProblemTypeProvider>();
 		return services;
 	}
 
