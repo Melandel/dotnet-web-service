@@ -48,4 +48,10 @@ static class WebApplicationExtensionMethods
 
 		return app;
 	}
+
+	public static WebApplication UseCustomExceptionHandlingCompliantWithRfc9457(this WebApplication app)
+	{
+		app.UseMiddleware<Concerns.ErrorHandling.Middlewares.ReturnProblemDetailsWhenExceptionIsThrown>();
+		return app;
+	}
 }

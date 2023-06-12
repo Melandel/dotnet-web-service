@@ -18,6 +18,18 @@ static class ControllerTestDoubles
 			_logger = logger;
 			}
 
+		[MapToApiVersion("3")]
+		[HttpGet]
+		public JsonResult GetHttpProblemTypeFromAnotherController() => new JsonResult(HttpProblemTypeProvider.GetDeveloperMistake());
+
+		[MapToApiVersion("3")]
+		[HttpGet]
+		public int DivisionByZero()
+		{
+			int zero = 0;
+			return 1/zero;
+		}
+
 		[HttpGet]
 		public string DefinedInAllApiVersions() => "Hello, word!";
 
