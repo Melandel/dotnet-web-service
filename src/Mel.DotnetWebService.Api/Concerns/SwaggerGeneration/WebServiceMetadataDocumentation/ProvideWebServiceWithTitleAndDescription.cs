@@ -11,12 +11,10 @@ public class ProvideWebServiceWithTitleAndDescription : IConfigureNamedOptions<S
 
 	public void Configure(SwaggerGenOptions options)
 	{
-		var openApiDocumentId = Integration.WebServiceMetadataDocumentation.Version;
-		var openApiDocument = new OpenApiInfo
+		foreach (var openApiDocument in options.SwaggerGeneratorOptions.SwaggerDocs.Values)
 		{
-			Title = Integration.WebServiceMetadataDocumentation.Title,
-			Description = Integration.WebServiceMetadataDocumentation.Description
-		};
-		options.SwaggerDoc(openApiDocumentId, openApiDocument);
+			openApiDocument.Title = Integration.WebServiceMetadataDocumentation.Title;
+			openApiDocument.Description = Integration.WebServiceMetadataDocumentation.Description + Environment.NewLine + openApiDocument.Description;
+		}
 	}
 }
