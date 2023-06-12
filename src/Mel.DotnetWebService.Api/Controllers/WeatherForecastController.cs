@@ -19,6 +19,14 @@ public class WeatherForecastController : ApiController
 		_logger = logger;
 	}
 
+	[MapToApiVersion("3")]
+	[HttpGet, Route("DivisionByZero")]
+	public double DivisionByZero()
+	{
+		var zero = 0;
+		return 1.0/zero;
+	}
+
 	[HttpGet, Route("DefinedInAllApiVersions")]
 	public string DefinedIn_ApiV1_and_ApiV2_and_ApiV3() => "I am defined in all API versions";
 
