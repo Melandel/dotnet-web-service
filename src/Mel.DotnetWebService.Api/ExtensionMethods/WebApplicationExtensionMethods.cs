@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Rewrite;
+﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
@@ -12,6 +13,13 @@ public static class WebApplicationExtensionMethods
 
 		app.UseSwaggerUI(swaggerUIOptions =>
 		{
+			var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+			var apiVersionDescriptionsFromMostRecentToOldest = apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse();
+			foreach (var apiVersionDescription in apiVersionDescriptionsFromMostRecentToOldest)
+			{
+				swaggerUIOptions.SwaggerEndpoint($"/swagger/{apiVersionDescription.GroupName}/swagger.json", apiVersionDescription.GroupName);
+			}
+
 			swaggerUIOptions.RoutePrefix = SwaggerRoutePrefix;
 			swaggerUIOptions.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
 		});

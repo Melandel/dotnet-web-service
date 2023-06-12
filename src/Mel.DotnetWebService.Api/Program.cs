@@ -1,7 +1,7 @@
 ﻿using Mel.DotnetWebService.Api.ExtensionMethods;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddCustomVersionedControllers();
 builder.Services.AddCustomSwaggerGenerator();
 
 var app = builder.Build();

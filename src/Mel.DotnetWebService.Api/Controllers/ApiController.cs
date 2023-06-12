@@ -3,7 +3,7 @@
 namespace Mel.DotnetWebService.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public abstract class ApiController : ControllerBase
 {
 }
