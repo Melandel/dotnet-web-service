@@ -1,11 +1,6 @@
-﻿using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-
+﻿
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers(mvcOptions =>
-{
-	mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
-});
+builder.Services.AddCustomControllers();
 builder.Services.AddCustomSwaggerGenerator();
 
 var app = builder.Build();
