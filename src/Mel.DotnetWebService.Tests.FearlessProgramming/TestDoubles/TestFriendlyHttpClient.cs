@@ -32,7 +32,7 @@ internal class TestFriendlyHttpClient
 		var routeName = KebabCaseParameterTransformer.RemoveAnyHttpVerbPrefix(controllerMethodName);
 
 		var requestUri = String.Format(
-			"api/{0}/{1}",
+			"api/v1/{0}/{1}",
 			KebabCaseConverter.Convert(typeof(TController).Name),
 			KebabCaseConverter.Convert(routeName));
 
