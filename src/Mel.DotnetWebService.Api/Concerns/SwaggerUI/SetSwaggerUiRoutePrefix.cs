@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Mel.DotnetWebService.Api.Concerns.SwaggerUI;
 
-public class CollapseSwaggerUiSectionsForReadability : IConfigureNamedOptions<SwaggerUIOptions>
+public class SetSwaggerUiRoutePrefix : IConfigureNamedOptions<SwaggerUIOptions>
 {
 	public void Configure(string? name, SwaggerUIOptions options)
 	=> Configure(options);
 
 	public void Configure(SwaggerUIOptions options)
 	{
-		options.DocExpansion(DocExpansion.List);
+		options.RoutePrefix = Integration.AccessToSwaggerUI.RoutePrefix;
 	}
 }

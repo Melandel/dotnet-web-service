@@ -1,4 +1,4 @@
-﻿namespace Mel.DotnetWebService.Api.Concerns.SwaggerGeneration;
+namespace Mel.DotnetWebService.Api.Concerns.SwaggerGeneration;
 
 static partial class Integration
 {
