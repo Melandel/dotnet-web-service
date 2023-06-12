@@ -9,6 +9,8 @@ app.UseSwagger();
 
 app.UseSwaggerUI();
 
+app.UseCustomRewriter();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

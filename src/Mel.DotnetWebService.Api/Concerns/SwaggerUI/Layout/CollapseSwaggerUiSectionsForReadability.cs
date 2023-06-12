@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace Mel.DotnetWebService.Api.Concerns.SwaggerUI;
+namespace Mel.DotnetWebService.Api.Concerns.SwaggerUI.Layout;
 
 public class CollapseSwaggerUiSectionsForReadability : IConfigureNamedOptions<SwaggerUIOptions>
 {
