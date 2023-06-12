@@ -1,26 +1,32 @@
-﻿namespace Mel.DotnetWebService.Api.ExtensionMethods;
+﻿using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+
+namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
 {
-	const string WebApiTitle = "Dotnet Web Service";
-	const string WebApiDescription = @"
-<ul>
-<li>The Dotnet Web Service API is a template API meant for sharing Minh-Tâm's vision of a clean web API.</li>
-<li>The <b>main use case</b> is getting a ""Hello, SomeName."" message.</li>
-<li><b>For a better introduction or more information, visit the <a href=""https://github.com/Melandel/team-wiki/wiki/%F0%9F%8E%A8-MyNiceProduct"">comprehensive documentation</a>.</b></li>
-</ul>";
-
 	public static IServiceCollection AddCustomSwaggerGenerator(this IServiceCollection services)
 	{
-		var openApiDocumentId = "v1";
-		var openApiDocument = new Microsoft.OpenApi.Models.OpenApiInfo
-		{
-			Title = WebApiTitle,
-			Description = WebApiDescription
-		};
+		services
+			.AddSwaggerGen()
+			.AddVersionedApiExplorer(apiExplorerOptions =>
+			{
+				apiExplorerOptions.GroupNameFormat = "'v'V";
+				apiExplorerOptions.SubstituteApiVersionInUrl = true;
+			})
+			.ConfigureOptions<Concerns.SwaggerUI.ConfigureSwaggerOptions>();
 
-		return services
-			.AddEndpointsApiExplorer()
-			.AddSwaggerGen(swaggerGenOptions => swaggerGenOptions.SwaggerDoc(openApiDocumentId, openApiDocument));
+		return services;
+	}
+
+	public static IServiceCollection AddCustomControllers(this IServiceCollection services)
+	{
+		services.AddControllers(mvcOptions =>
+		{
+			mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
+		});
+		services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ReportApiVersions = true);
+		return services;
 	}
 }
+
