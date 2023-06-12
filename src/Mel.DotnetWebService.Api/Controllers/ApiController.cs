@@ -6,4 +6,5 @@ namespace Mel.DotnetWebService.Api.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public abstract class ApiController : ControllerBase
 {
+	protected HttpProblemTypesController HttpProblemTypeProvider => new HttpProblemTypesController(this);
 }

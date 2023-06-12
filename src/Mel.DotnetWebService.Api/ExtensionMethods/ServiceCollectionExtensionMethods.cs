@@ -28,6 +28,12 @@ public static class ServiceCollectionExtensionMethods
 		return services;
 	}
 
+	public static IServiceCollection AddCustomExceptionHandlingCompliantWithRfc9457(this IServiceCollection services)
+	{
+		services.AddProblemDetails();
+		return services;
+	}
+
 	public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
 	{
 		const string WebApiTitle = "Dotnet Web Service";
