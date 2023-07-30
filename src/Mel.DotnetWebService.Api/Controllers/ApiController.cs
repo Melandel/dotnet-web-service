@@ -4,6 +4,7 @@ namespace Mel.DotnetWebService.Api.Controllers;
 
 [ApiController]
 [ErrorHandling.StoreReceivingControllerContextInsideHttpContext]
+[EnumsHandling.ProhibitEnumsPassedAsIntegersInRouteOrQueryString]
 [Route("api/v{version:apiVersion}/[controller]")]
 public abstract class ApiController : ControllerBase
 {

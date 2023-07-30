@@ -20,6 +20,35 @@ public class WeatherForecastController : ApiController
 	}
 
 	[MapToApiVersion("3")]
+	[HttpGet, Route("WithEnumInOutputFieldAndInRoute/{city}")]
+	public WeatherForecast WithEnumInOutputFieldAndInRoute(City city)
+	{
+		var forecast = DefinedIn_ApiV1().First();
+		forecast.City = city;
+
+		return forecast;
+	}
+
+	[MapToApiVersion("3")]
+	[HttpGet, Route("WithEnumInOutputFieldAndInQueryString")]
+	public WeatherForecast WithEnumInOutputFieldAndInQueryString([FromQuery]City city)
+	{
+		var forecast = DefinedIn_ApiV1().First();
+		forecast.City = city;
+
+		return forecast;
+	}
+
+	[MapToApiVersion("3")]
+	[HttpPost, Route("WithEnumOutputInFieldAndInRequestBody")]
+	public WeatherForecast WithEnumInOutputFieldAndInRequestBody(PayloadWithCityProperty payload)
+	{
+		var forecast = DefinedIn_ApiV1().First();
+		forecast.City = payload.City;
+
+		return forecast;
+	}
+
 	[HttpGet, Route("GetHttpProblemTypeFromAnotherController")]
 	public JsonResult CallsHttpProblemTypesController() => new JsonResult(HttpProblemTypeProvider.GetDeveloperMistake());
 

@@ -8,6 +8,7 @@ static class ExceptionExtensionMethods
 	=> HttpProblem.From(
 		httpProblemType: exception switch
 	{
+			EnumValueReceivedFromIntegerException _ => httpProblemTypeProvider.GetEnumValueReceivedFromInteger(),
 			_ => httpProblemTypeProvider.GetDeveloperMistake()
 		},
 		httpProblemOccurrence: exception switch

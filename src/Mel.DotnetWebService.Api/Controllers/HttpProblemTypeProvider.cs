@@ -61,4 +61,15 @@ public class HttpProblemTypeProvider : ApiController
 		title: "An unexpected error took place.",
 		description: "An error, flaw or fault in the design, development, or operation of computer software caused the application to produce an incorrect or unexpected result, or to behave in unintended ways.",
 		DebuggingInformationName.StackTrace);
+
+	[HttpGet("enum-value-received-from-integer")]
+	public HttpProblemType GetEnumValueReceivedFromInteger()
+	=> HttpProblemType.Create(
+		BuildFullRouteToProblemType(),
+		HttpStatusCode.BadRequest,
+		title: "An enum value was passed as integer instead of being passed as a string.",
+		description: "https://stackoverflow.com/questions/49562774/what-is-the-best-way-to-prohibit-integer-value-for-enum-actions-parameter",
+		DebuggingInformationName.IntegerValue,
+		DebuggingInformationName.EnumParameterName,
+		DebuggingInformationName.AcceptedEnumValues);
 }
