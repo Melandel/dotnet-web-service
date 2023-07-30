@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using System.Text.Json.Serialization;
+using Mel.DotnetWebService.Api.EnumsHandling;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -7,6 +10,13 @@ namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 public static class ServiceCollectionExtensionMethods
 {
+	public static IServiceCollection AddCustomSerializationSettings(this IServiceCollection services)
+	{
+		services.ConfigureOptions<ConfigureMvcJsonOptions>();
+
+		return services;
+	}
+
 	public static IServiceCollection AddCustomSwaggerGenerator(this IServiceCollection services)
 	{
 		services
@@ -32,6 +42,15 @@ public static class ServiceCollectionExtensionMethods
 	{
 		services.AddProblemDetails();
 		return services;
+	}
+
+	public class ConfigureMvcJsonOptions : IConfigureNamedOptions<JsonOptions>
+	{
+		public void Configure(string? name, JsonOptions options) => Configure(options);
+		public void Configure(JsonOptions options)
+		{
+			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+		}
 	}
 
 	public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
@@ -68,6 +87,8 @@ public static class ServiceCollectionExtensionMethods
 
 				options.SwaggerDoc(openApiDocumentId, openApiDocument);
 			}
+
+			options.DocumentFilter<TechnicalDefaultEnumValueDocumentFilter>();
 		}
 	}
 }

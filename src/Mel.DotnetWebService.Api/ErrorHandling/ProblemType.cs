@@ -19,4 +19,10 @@ class ProblemType
 		new Uri("https://en.wikipedia.org/wiki/Software_bug"),
 		"Developer mistake",
 		HttpStatusCode.InternalServerError);
+
+	public static ProblemType EnumValueReceivedFromInteger
+	=> new(
+		new Uri("https://stackoverflow.com/questions/49562774/what-is-the-best-way-to-prohibit-integer-value-for-enum-actions-parameter"),
+		"Enum value received from integer",
+		HttpStatusCode.BadRequest);
 }

@@ -1,6 +1,7 @@
 ﻿using Mel.DotnetWebService.Api.ExtensionMethods;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCustomSerializationSettings();
 builder.Services.AddCustomVersionedControllers();
 builder.Services.AddCustomSwaggerGenerator();
 builder.Services.AddCustomExceptionHandlingCompliantWithRfc9457();
