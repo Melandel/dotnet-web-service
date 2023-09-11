@@ -7,13 +7,14 @@ public record HttpProblemType
 	public Uri Uri { get; init; }
 	public string Title { get; init; }
 	public HttpStatusCode? RecommendedHttpStatusCode { get; init; }
-	public string DefiningSpecification { get; init; }
+	public HttpProblemTypeSpecification DefiningSpecification { get; init; }
 
+	[Newtonsoft.Json.JsonConstructor]
 	HttpProblemType(
-		Uri uri,
-		string title,
-		HttpStatusCode? recommendedHttpStatusCode,
-		string definingSpecification)
+			Uri uri,
+			string title,
+			HttpStatusCode? recommendedHttpStatusCode,
+			HttpProblemTypeSpecification definingSpecification)
 	{
 		Uri = uri;
 		Title = title;
@@ -21,16 +22,15 @@ public record HttpProblemType
 		DefiningSpecification = definingSpecification;
 	}
 
-	public static HttpProblemType CreateWithDefiningSpecification(
+	public static HttpProblemType Create(
 		Uri uri,
 		HttpStatusCode? recommendedHttpStatusCode,
 		string title,
-		string definingSpecification)
-	=> new HttpProblemType(uri, title, recommendedHttpStatusCode, definingSpecification);
-
-	public static HttpProblemType CreateWithoutDefiningSpecification(
-		Uri uri,
-		HttpStatusCode? recommendedHttpStatusCode,
-		string title)
-	=> new HttpProblemType(uri, title, recommendedHttpStatusCode, title);
+		string description,
+		params DebuggingInformationName[] debuggingInformationToProvide)
+	=> new(
+		uri,
+		title,
+		recommendedHttpStatusCode,
+		HttpProblemTypeSpecification.From(description, debuggingInformationToProvide));
 }

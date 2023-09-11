@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Mel.DotnetWebService.Api.Controllers;
 using Mel.DotnetWebService.Api.EnumsHandling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -41,6 +42,14 @@ public static class ServiceCollectionExtensionMethods
 	public static IServiceCollection AddCustomExceptionHandlingCompliantWithRfc9457(this IServiceCollection services)
 	{
 		services.AddProblemDetails();
+		services.AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware();
+		return services;
+	}
+
+	public static IServiceCollection AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware(this IServiceCollection services)
+	{
+		services.AddHttpContextAccessor();
+		services.AddScoped<HttpProblemTypeProvider>();
 		return services;
 	}
 

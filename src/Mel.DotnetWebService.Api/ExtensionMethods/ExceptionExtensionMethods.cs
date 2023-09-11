@@ -4,10 +4,21 @@ namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ExceptionExtensionMethods
 {
-	internal static Problem ToProblem(this Exception exception)
-	=> exception switch
-	{
-		EnumValueReceivedFromIntegerException ex => EnumValueReceivedFromIntegerProblem.From(ex.IntegerValue, ex.ParameterName, ex.AcceptedEnumValues),
-		_ => DeveloperMistake.FromStackTrace(exception.StackTrace)
-	};
+	internal static HttpProblem ToProblem(this Exception exception, Controllers.HttpProblemTypeProvider httpProblemTypeProvider)
+	=> HttpProblem.From(
+		httpProblemType: exception switch
+		{
+			EnumValueReceivedFromIntegerException ex => httpProblemTypeProvider.GetEnumValueReceivedFromInteger(),
+			_ => httpProblemTypeProvider.GetDeveloperMistake()
+		},
+		httpProblemOccurrence: exception switch
+		{
+			_ => HttpProblemOccurrence.FromIdAndExplanationThatShouldHelpTheClientUnderstandTheApi(
+				new Uri("https://www.google.com"),
+				"foo",
+				new Dictionary<DebuggingInformationName, object>
+				{
+					{ DebuggingInformationName.StackTrace, exception.StackTrace! }
+				})
+		});
 }

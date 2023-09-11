@@ -1,4 +1,5 @@
-﻿using Mel.DotnetWebService.Api.ExtensionMethods;
+﻿using Mel.DotnetWebService.Api.Controllers;
+using Mel.DotnetWebService.Api.ExtensionMethods;
 
 namespace Mel.DotnetWebService.Api.Middlewares;
 
@@ -18,7 +19,8 @@ public class ReturnProblemDetailsWhenExceptionIsThrown
 		}
 		catch (Exception ex)
 		{
-			var problem = ex.ToProblem();
+			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<HttpProblemTypeProvider>();
+			var problem = ex.ToProblem(httpProblemTypeProvider);
 			await httpContext.WriteErrorResponse(problem);
 		}
 	}

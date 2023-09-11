@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.ErrorHandling;
+
 public class ErrorHandlingShould
 {
 	static readonly TestServerForErrorHandling TestServer;
@@ -25,15 +27,16 @@ public class ErrorHandlingShould
 		{
 			ProblemDetails problemDetails = null;
 			Assert.That(
-				() => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent),
-				Throws.Nothing);
+					() => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent),
+					Throws.Nothing);
 
 			Assert.That(problemDetails, Is.Not.Null);
-			Assert.That(responseContent, Contains.Substring(DeveloperMistake.StackTraceDebuggingInformationKey));
+			Assert.That(responseContent, Contains.Substring(DebuggingInformationName.StackTrace.ToString()));
 
-			Assert.That(problemDetails.Type, Is.EqualTo(ProblemType.DeveloperMistake.Id.ToString()));
-			Assert.That(problemDetails.Title, Is.EqualTo(ProblemType.DeveloperMistake.Name));
-			Assert.That(problemDetails.Status, Is.EqualTo((int)ProblemType.DeveloperMistake.HttpStatus));
+			var developerMistake = TestServer.GetHttpProblemTypeByName("developer-mistake");
+			Assert.That(problemDetails.Type, Is.EqualTo(developerMistake.Uri.ToString()));
+			Assert.That(problemDetails.Title, Is.EqualTo(developerMistake.Title));
+			Assert.That(problemDetails.Status, Is.EqualTo((int)developerMistake.RecommendedHttpStatusCode));
 			Assert.That(problemDetails.Detail, Is.Not.Null.And.Not.Empty);
 		});
 	}
