@@ -21,6 +21,38 @@ static class ControllerTestDoubles
 			_logger = logger;
 			}
 
+		public enum CityName { TechnicalDefaultEnumValue = 0, Toulouse = 1, Bordeaux = 2, Paris = 3 };
+		public record RequestWithCityNameProperty(CityName CityName);
+		public record ResponseWithCityNameProperty(CityName CityName, string helloCity);
+		string HelloCity(CityName cityName) => DefinedOnlyInApiV1().Replace("world", cityName.ToString());
+
+		[MapToApiVersion("1")]
+		[HttpGet, Route("{cityName}")]
+		public ResponseWithCityNameProperty WithEnumInOutputFieldAndInRoute(CityName cityName)
+		=> cityName switch
+		{
+			CityName.TechnicalDefaultEnumValue => throw TestDataIntegrityException.GeneratedBy(GetType(), nameof(WithEnumInOutputFieldAndInRoute), $"Route parameter {nameof(CityName)} is {CityName.TechnicalDefaultEnumValue}"),
+			_ => new(cityName, HelloCity(cityName))
+		};
+
+		[MapToApiVersion("1")]
+		[HttpGet]
+		public ResponseWithCityNameProperty WithEnumInOutputFieldAndInQueryString([FromQuery]CityName cityName)
+		=> cityName switch
+		{
+			CityName.TechnicalDefaultEnumValue => throw TestDataIntegrityException.GeneratedBy(GetType(), nameof(WithEnumInOutputFieldAndInQueryString), $"Query string {nameof(CityName)} is {CityName.TechnicalDefaultEnumValue}"),
+			_ => new(cityName, HelloCity(cityName))
+		};
+
+		[MapToApiVersion("1")]
+		[HttpPost]
+		public ResponseWithCityNameProperty WithEnumInOutputFieldAndInRequestBody(RequestWithCityNameProperty payload)
+		=> payload switch
+		{
+			{ CityName: CityName.TechnicalDefaultEnumValue } => throw TestDataIntegrityException.GeneratedBy(GetType(), nameof(WithEnumInOutputFieldAndInRequestBody), $"Payload contains {nameof(CityName)} {CityName.TechnicalDefaultEnumValue}"),
+			_ => new(payload.CityName, HelloCity(payload.CityName))
+		};
+
 		[MapToApiVersion("3")]
 		[HttpGet]
 		public JsonResult GetHttpProblemTypeFromAnotherController() => new JsonResult(HttpProblemTypeProvider.GetDeveloperMistake());

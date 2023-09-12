@@ -1,4 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCustomSerializationSettings();
 builder.Services.AddCustomControllersAndCustomApiVersioning();
 builder.Services.AddCustomSwaggerGeneration();
 builder.Services.AddCustomSwaggerUI();

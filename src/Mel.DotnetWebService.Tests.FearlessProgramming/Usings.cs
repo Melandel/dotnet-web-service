@@ -1,4 +1,4 @@
-﻿global using System.Net;
+global using System.Net;
 global using NSubstitute;
 global using NUnit.Framework;
 global using Mel.DotnetWebService.CrossCuttingConcerns.ErrorHandling;
