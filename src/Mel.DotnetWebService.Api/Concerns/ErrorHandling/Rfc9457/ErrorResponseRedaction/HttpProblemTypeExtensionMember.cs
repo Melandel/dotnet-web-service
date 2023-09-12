@@ -7,4 +7,7 @@ public enum HttpProblemTypeExtensionMember
 	ExceptionsTypes = 2,
 	ExceptionsAggregatedMessages = 3,
 	ExceptionsAggregatedData = 4,
+	IntegerValue = 5,
+	EnumParameterName = 6,
+	SupportedEnumValues = 7
 }

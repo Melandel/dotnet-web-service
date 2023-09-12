@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction.HttpProblemTypeExtensionMember;
 using static Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles.ControllerTestDoubles;
@@ -71,7 +70,9 @@ class ErrorHandlingShould : TestSuiteUsingTestServer
 			var payload = $@"{{ ""Guid"": ""{invalidGuid}"" }}";
 
 			// Act
-			var httpResponse = await TestServer.HttpClient.PostAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod, new StringContent(payload, Encoding.UTF8, "application/json"));
+			var httpResponse = await TestServer.HttpClient.PostAsync<StubbedEndpointsSpecificallyCreatedForTests>(
+				controllerMethod,
+				payload.ToJsonContent());
 
 			// Assert
 			Assert.Multiple(() =>
