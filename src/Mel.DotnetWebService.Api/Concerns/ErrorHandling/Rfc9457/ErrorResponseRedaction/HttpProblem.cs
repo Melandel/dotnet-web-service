@@ -20,6 +20,24 @@ record HttpProblem
 	public static HttpProblem From(HttpProblemType httpProblemType, HttpProblemOccurrence httpProblemOccurrence)
 	=> new(httpProblemType, httpProblemOccurrence);
 
+	public static HttpProblem FromDeveloperMistake(Exception exception, HttpProblemType developerMistakeProblemType, Uri someFormOfIdentifierForTheProblemOccurrence)
+	=> From(
+		developerMistakeProblemType,
+		HttpProblemOccurrence.FromDeveloperMistakeInThisApi(
+			id: someFormOfIdentifierForTheProblemOccurrence,
+			apologeticStatement: "Oops! Something wrong happened on our side...",
+			problemSpecificInformation: developerMistakeProblemType.DefiningSpecification.ExpectedExtensionMembers
+				.ToDictionary<HttpProblemTypeExtensionMember, HttpProblemTypeExtensionMember, object>(
+					keySelector: extensionMemberName => extensionMemberName,
+					elementSelector: extensionMemberName => extensionMemberName switch
+					{
+						HttpProblemTypeExtensionMember.StackTrace => ExceptionExtensionMethods.GetStackTraceFromAllInnerExceptions(exception),
+						HttpProblemTypeExtensionMember.ExceptionsTypes => ExceptionExtensionMethods.GetConcatenatedExceptionTypesFromAllInnerExceptions(exception),
+						HttpProblemTypeExtensionMember.ExceptionsAggregatedMessages => ExceptionExtensionMethods.GetConcatenatedMessagesFromAllInnerExceptions(exception),
+						HttpProblemTypeExtensionMember.ExceptionsAggregatedData => ExceptionExtensionMethods.GetConcatenatedDataFromAllInnerExceptions(exception),
+						var extensionMemberRequiredButMissing => throw new NotImplementedException($"the extension member {extensionMemberRequiredButMissing.ToString()} is not supported when a {developerMistakeProblemType.GetType().Name}-type problem occurs.")
+					})));
+
 	public Microsoft.AspNetCore.Mvc.ProblemDetails ToProblemDetails()
 	{
 		var problemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails
