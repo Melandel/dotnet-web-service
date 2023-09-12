@@ -5,6 +5,13 @@ namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
 {
+	public static IServiceCollection AddCustomSerializationSettings(this IServiceCollection services)
+	{
+		services.ConfigureOptions<Concerns.EnumsHandling.Serialization.ConfigureMvcJsonOptions>();
+
+		return services;
+	}
+
 	public static IServiceCollection AddCustomSwaggerGenerator(this IServiceCollection services)
 	{
 		services

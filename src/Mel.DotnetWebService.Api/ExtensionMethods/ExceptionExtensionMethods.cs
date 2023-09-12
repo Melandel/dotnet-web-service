@@ -13,25 +13,43 @@ static class ExceptionExtensionMethods
 			var someFormOfIdentifierForTheProblemOccurrence = new Uri(baseApiUrl, someFormOfRequestId);
 
 			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<Controllers.HttpProblemTypeProvider>();
-			var httpProblemType = httpProblemTypeProvider.GetDeveloperMistake();
 
-			var httpProblemOccurrence = HttpProblemOccurrence.FromDeveloperMistakeInThisApi(
-				id: someFormOfIdentifierForTheProblemOccurrence,
-				apologeticStatement: "Oops! Something wrong happened on our side...",
-				problemSpecificInformation: httpProblemType.DefiningSpecification.ExpectedExtensionMembers
-					.ToDictionary<HttpProblemTypeExtensionMember, HttpProblemTypeExtensionMember, object>(
-						keySelector: extensionMemberName => extensionMemberName,
-						elementSelector: extensionMemberName => extensionMemberName switch
-						{
-							HttpProblemTypeExtensionMember.StackTrace => exception.GetStackTraceFromAllInnerExceptions(),
-							HttpProblemTypeExtensionMember.ExceptionsTypes => exception.GetConcatenatedExceptionTypesFromAllInnerExceptions(),
-							HttpProblemTypeExtensionMember.ExceptionsAggregatedMessages => exception.GetConcatenatedMessagesFromAllInnerExceptions(),
-							HttpProblemTypeExtensionMember.ExceptionsAggregatedData => exception.GetConcatenatedDataFromAllInnerExceptions(),
-							var extensionMemberRequiredButMissing => throw new NotImplementedException($"the extension member {extensionMemberRequiredButMissing.ToString()} is not supported when a {httpProblemType.GetType().Name}-type problem occurs.")
-						}));
-
-			httpProblem = HttpProblem.From(httpProblemType, httpProblemOccurrence);
-			return true;
+			switch (exception)
+			{
+				case EnumValueReceivedFromIntegerException ex:
+					httpProblem = HttpProblem.From(
+						httpProblemTypeProvider.GetEnumValueReceivedFromInteger(),
+						HttpProblemOccurrence.FromIncorrectApiUsage(
+							id: someFormOfIdentifierForTheProblemOccurrence,
+							statementDescribingIncorrectApiUsage: $"Parameter \"{ex.ParameterName}\" does not accept value {ex.IntegerValue}.",
+							statementHelpingApiUserTowardsCorrectApiUsage: $"Supported values: {string.Join(", ", ex.SupportedEnumValues)}.",
+							problemSpecificInformation: new Dictionary<HttpProblemTypeExtensionMember, object>
+							{
+								{ HttpProblemTypeExtensionMember.IntegerValue, ex.IntegerValue },
+								{ HttpProblemTypeExtensionMember.EnumParameterName, ex.ParameterName },
+								{ HttpProblemTypeExtensionMember.SupportedEnumValues, ex.SupportedEnumValues }
+							}));
+					return true;
+				default:
+					var httpProblemType = httpProblemTypeProvider.GetDeveloperMistake();
+					httpProblem = HttpProblem.From(
+							httpProblemType,
+							HttpProblemOccurrence.FromDeveloperMistakeInThisApi(
+								id: someFormOfIdentifierForTheProblemOccurrence,
+								apologeticStatement: "Oops! Something wrong happened on our side...",
+								problemSpecificInformation: httpProblemType.DefiningSpecification.ExpectedExtensionMembers
+									.ToDictionary<HttpProblemTypeExtensionMember, HttpProblemTypeExtensionMember, object>(
+										keySelector: extensionMemberName => extensionMemberName,
+										elementSelector: extensionMemberName => extensionMemberName switch
+										{
+											HttpProblemTypeExtensionMember.StackTrace => exception.GetStackTraceFromAllInnerExceptions(),
+											HttpProblemTypeExtensionMember.ExceptionsTypes => exception.GetConcatenatedExceptionTypesFromAllInnerExceptions(),
+											HttpProblemTypeExtensionMember.ExceptionsAggregatedMessages => exception.GetConcatenatedMessagesFromAllInnerExceptions(),
+											HttpProblemTypeExtensionMember.ExceptionsAggregatedData => exception.GetConcatenatedDataFromAllInnerExceptions(),
+											var extensionMemberRequiredButMissing => throw new NotImplementedException($"the extension member {extensionMemberRequiredButMissing.ToString()} is not supported when a {httpProblemType.GetType().Name}-type problem occurs.")
+										})));
+					return true;
+			}
 		}
 		catch
 		{
