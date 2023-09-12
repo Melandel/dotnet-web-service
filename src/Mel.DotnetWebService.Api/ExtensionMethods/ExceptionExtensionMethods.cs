@@ -1,5 +1,5 @@
 ﻿using Mel.DotnetWebService.Api.Concerns.ErrorHandling;
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Exceptions;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.HttpProblemTypes;
 
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
@@ -7,29 +7,63 @@ static class ExceptionExtensionMethods
 {
 	public static HttpProblem ToProblem(this Exception exception, HttpContext httpContext)
 	{
-		var baseApiUrl = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}/");
-		var someFormOfRequestId = System.Diagnostics.Activity.Current?.Id ?? httpContext.TraceIdentifier;
-		var someFormOfIdentifierForTheProblemOccurrence = new Uri(baseApiUrl, someFormOfRequestId);
+		var httpProblemType = BuildHttpProblemType(
+			exception,
+			httpContext.RequestServices.GetRequiredService<Controllers.HttpProblemTypeProvider>());
 
-		var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<Controllers.HttpProblemTypeProvider>();
-		var httpProblemType = httpProblemTypeProvider.GetDeveloperMistake();
+		var httpProblemOccurrence = BuildHttpProblemOccurrence(
+			BuildProblemOccurrenceId(httpContext),
+			httpProblemType,
+			exception);
 
-		var httpProblemOccurrence = HttpProblemOccurrence.FromDeveloperMistakeInThisApi(
-			id: someFormOfIdentifierForTheProblemOccurrence,
-			apologeticStatement: "Oops! Something wrong happened on our side...",
-			problemSpecificInformation: httpProblemType.DefiningSpecification.ExpectedExtensionMembers
+		return HttpProblem.From(httpProblemType, httpProblemOccurrence);
+	}
+
+	static HttpProblemType BuildHttpProblemType(Exception exception, Controllers.HttpProblemTypeProvider httpProblemTypeProvider)
+	=> exception switch
+	{
+		EnumValueReceivedFromIntegerException => httpProblemTypeProvider.GetEnumValueReceivedFromInteger(),
+		_ => httpProblemTypeProvider.GetDeveloperMistake()
+	};
+
+	static HttpProblemOccurrence BuildHttpProblemOccurrence(Uri problemOccurrenceId, HttpProblemType httpProblemType, Exception exception)
+	=> (httpProblemType, exception) switch
+	{
+		(EnumValueReceivedFromInteger problemType, EnumValueReceivedFromIntegerException ex) => HttpProblemOccurrence.FromIncorrectApiUsage(
+			id: problemOccurrenceId,
+			statementDescribingIncorrectApiUsage: $"Parameter \"{ex.ParameterName}\" does not accept value {ex.IntegerValue}.",
+			statementHelpingApiUserTowardsCorrectApiUsage: $"Supported values: {string.Join(", ", ex.SupportedEnumValues)}.",
+			problemSpecificInformation: problemType.DefiningSpecification.ExpectedExtensionMembers
 				.ToDictionary<HttpProblemTypeExtensionMember, HttpProblemTypeExtensionMember, object>(
 					keySelector: extensionMemberName => extensionMemberName,
 					elementSelector: extensionMemberName => extensionMemberName switch
 					{
-						HttpProblemTypeExtensionMember.StackTrace => exception.GetStackTraceFromAllInnerExceptions(),
-						HttpProblemTypeExtensionMember.ExceptionsTypes => exception.GetConcatenatedExceptionTypesFromAllInnerExceptions(),
-						HttpProblemTypeExtensionMember.ExceptionsAggregatedMessages => exception.GetConcatenatedMessagesFromAllInnerExceptions(),
-						HttpProblemTypeExtensionMember.ExceptionsAggregatedData => exception.GetConcatenatedDataFromAllInnerExceptions(),
-						var extensionMemberRequiredButMissing => throw MissingProblemTypeExtensionMemberException.WhenBuildingHttpProblemOccurrence(httpProblemType.GetType(), extensionMemberRequiredButMissing)
-					}));
+						HttpProblemTypeExtensionMember.IntegerValue => ex.IntegerValue,
+						HttpProblemTypeExtensionMember.EnumParameterName => ex.ParameterName,
+						HttpProblemTypeExtensionMember.SupportedEnumValues => ex.SupportedEnumValues,
+						var extensionMemberRequiredButMissing => throw MissingProblemTypeExtensionMemberException.WhenBuildingHttpProblemOccurrence(problemType.GetType(), extensionMemberRequiredButMissing)
+					})),
+		(var problemType, var ex) => HttpProblemOccurrence.FromDeveloperMistakeInThisApi(
+			id: problemOccurrenceId,
+			apologeticStatement: "Oops! Something wrong happened on our side...",
+			problemSpecificInformation: problemType.DefiningSpecification.ExpectedExtensionMembers
+				.ToDictionary<HttpProblemTypeExtensionMember, HttpProblemTypeExtensionMember, object>(
+					keySelector: extensionMemberName => extensionMemberName,
+					elementSelector: extensionMemberName => extensionMemberName switch
+					{
+						HttpProblemTypeExtensionMember.StackTrace => ex.GetStackTraceFromAllInnerExceptions(),
+						HttpProblemTypeExtensionMember.ExceptionsTypes => ex.GetConcatenatedExceptionTypesFromAllInnerExceptions(),
+						HttpProblemTypeExtensionMember.ExceptionsAggregatedMessages => ex.GetConcatenatedMessagesFromAllInnerExceptions(),
+						HttpProblemTypeExtensionMember.ExceptionsAggregatedData => ex.GetConcatenatedDataFromAllInnerExceptions(),
+						var extensionMemberRequiredButMissing => throw MissingProblemTypeExtensionMemberException.WhenBuildingHttpProblemOccurrence(problemType.GetType(), extensionMemberRequiredButMissing)
+					}))
+	};
 
-		return HttpProblem.From(httpProblemType, httpProblemOccurrence);
+	static Uri BuildProblemOccurrenceId(HttpContext httpContext)
+	{
+		var baseApiUrl = new Uri($"{httpContext.Request.Scheme}://{httpContext.Request.Host.Value}/");
+		var someFormOfRequestId = System.Diagnostics.Activity.Current?.Id ?? httpContext.TraceIdentifier;
+		return new Uri(baseApiUrl, someFormOfRequestId);
 	}
 
 	public static string GetStackTraceFromAllInnerExceptions(this Exception exception)

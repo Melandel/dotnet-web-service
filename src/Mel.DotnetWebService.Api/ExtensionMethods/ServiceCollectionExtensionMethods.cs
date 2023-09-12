@@ -1,4 +1,6 @@
-﻿using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
+﻿using System.Text.Json.Serialization;
+using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Options;
@@ -9,6 +11,13 @@ namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
 {
+	public static IServiceCollection AddCustomSerializationSettings(this IServiceCollection services)
+	{
+		services.ConfigureOptions<ConfigureMvcJsonOptions>();
+
+		return services;
+	}
+
 	public static IServiceCollection AddCustomSwaggerGenerator(this IServiceCollection services)
 	{
 		services
@@ -47,7 +56,16 @@ static class ServiceCollectionExtensionMethods
 		return services;
 	}
 
-	class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
+	class ConfigureMvcJsonOptions : IConfigureNamedOptions<JsonOptions>
+	{
+		public void Configure(string? name, JsonOptions options) => Configure(options);
+		public void Configure(JsonOptions options)
+		{
+			options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+		}
+	}
+
+	public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
 	{
 		const string WebApiTitle = "Dotnet Web Service";
 		const string WebApiDescriptionSuffixWhenVersionIsDeprecated = "<i>This API version has been deprecated. Please use one of the new APIs available from the explorer.</i>";
@@ -81,6 +99,8 @@ static class ServiceCollectionExtensionMethods
 
 				options.SwaggerDoc(openApiDocumentId, openApiDocument);
 			}
+
+			options.DocumentFilter<Concerns.EnumsHandling.Swagger.TechnicalDefaultEnumValueDocumentFilter>();
 		}
 	}
 }

@@ -27,9 +27,6 @@ public class HttpProblemTypeProvider : ApiController
 	{
 		_httpContextAccessor = httpContextAccessor;
 		_hostEnv = webHostingEnvironment;
-		var a = _hostEnv.IsProduction();
-		int i = 42;
-		i++;
 	}
 
 				Uri BuildFullRouteToProblemType([CallerMemberName] string memberName = "")
@@ -61,4 +58,8 @@ public class HttpProblemTypeProvider : ApiController
 	[HttpGet]
 	public HttpProblemType GetDeveloperMistake()
 	=> new DeveloperMistake(BuildFullRouteToProblemType(), _hostEnv);
+
+	[HttpGet]
+	public HttpProblemType GetEnumValueReceivedFromInteger()
+	=> new EnumValueReceivedFromInteger(BuildFullRouteToProblemType());
 }
