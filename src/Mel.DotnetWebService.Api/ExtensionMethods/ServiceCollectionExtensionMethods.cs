@@ -20,6 +20,12 @@ static class ServiceCollectionExtensionMethods
 		return services;
 	}
 
+	public static IServiceCollection AddCustomSerializationSettings(this IServiceCollection services)
+	{
+		services.ConfigureOptions<Concerns.EnumsHandling.IntegerToEnumTypeProhibition.Serialization.ProhibitIntegerToEnumTypeSerializationAttribute>();
+		return services;
+	}
+
 	public static IServiceCollection AddCustomSwaggerGeneration(this IServiceCollection services)
 	{
 		services
@@ -27,7 +33,8 @@ static class ServiceCollectionExtensionMethods
 			.AddEndpointsApiExplorer()
 			.ConfigureOptions<Concerns.Versioning.SwaggerGeneration.CreateOneSwaggerForEachApiVersion>()
 			.ConfigureOptions<Concerns.SwaggerGeneration.WebServiceMetadataDocumentation.ProvideWebServiceWithTitleAndDescription>()
-			.ConfigureOptions<Concerns.DataValidity.ConstrainedTypes.SwaggerGeneration.ProcessConstrainedTypesExactlyLikeTheirRootType>();
+			.ConfigureOptions<Concerns.DataValidity.ConstrainedTypes.SwaggerGeneration.ProcessConstrainedTypesExactlyLikeTheirRootType>()
+			.ConfigureOptions<Concerns.EnumsHandling.FailedOrSkippedDeserializationDetection.SwaggerGeneration.RemoveTechnicalDefaultEnumValueFromDocumentedEnumValues>();
 
 		return services;
 	}
