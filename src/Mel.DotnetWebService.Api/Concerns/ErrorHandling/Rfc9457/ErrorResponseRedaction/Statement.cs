@@ -9,8 +9,8 @@ sealed class Statement : ConstrainedValue<string>, IConstrainedValue<string, Sta
 		Value = value switch
 		{
 			null => "",
-			[var firstCharacter, ..] when !char.IsUpper(firstCharacter) => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(Value), value, $"@member must start with an upper-case letter."),
-			[.., var lastCharacter] when lastCharacter is not '.' => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(Value), value, $"@member must end with a dot."),
+			[var firstCharacter, ..] when char.IsLetter(firstCharacter) && !char.IsUpper(firstCharacter) => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(Value), value, $"@member must start with an upper-case letter."),
+			[.., var lastCharacter] when char.IsLetterOrDigit(lastCharacter) || char.IsWhiteSpace(lastCharacter) => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(Value), value, $"@member must end with a dot or a special character."),
 			_ => value
 		};
 	}
@@ -32,7 +32,7 @@ sealed class Statement : ConstrainedValue<string>, IConstrainedValue<string, Sta
 			},
 			{
 				"We are uncovering better ways of developing software by doing it and helping others do it",
-				"Value must end with a dot."
+				"Value must end with a dot or a special character."
 			},
 		});
 
