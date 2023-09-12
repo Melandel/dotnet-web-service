@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.HttpProblemTypeExtensionMember;
 
@@ -70,7 +69,9 @@ class ErrorHandlingShould : TestSuiteUsingTestServer
 			var payload = $@"{{ ""Guid"": ""{invalidGuid}"" }}";
 
 			// Act
-			var httpResponse = await TestServer.HttpClient.PostAsync(requestUri, new StringContent(payload, Encoding.UTF8, "application/json"));
+			var httpResponse = await TestServer.HttpClient.PostAsync(
+				requestUri,
+				payload.ToJsonContent());
 
 			// Assert
 			Assert.Multiple(() =>
