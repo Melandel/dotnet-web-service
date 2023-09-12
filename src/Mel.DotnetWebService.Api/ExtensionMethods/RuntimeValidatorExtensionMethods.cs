@@ -1,7 +1,9 @@
-//namespace Mel.DotnetWebService.Api.ExtensionMethods;
+namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
-//static class RuntimeValidatorExtensionMethods
-//{
-//	public static void EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(this Concerns.RuntimeValidation.RuntimeValidator runtimeValidator)
-//	=> Concerns.DataValidity.Integration.ConstrainedTypes.Serialization.EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(runtimeValidator);
-//}
+static class RuntimeValidatorExtensionMethods
+{
+	public static void EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(this Concerns.RuntimeValidation.RuntimeValidator runtimeValidator)
+	=> Concerns.DataValidity.Integration.ConstrainedTypes.Serialization.EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(runtimeValidator);
+	public static void EnsureThatEnumTypesInvolvedInsideControllerActionSignaturesCanBeDetectFailedOrSkippedDeserialization(this Concerns.RuntimeValidation.RuntimeValidator runtimeValidator)
+	=> Concerns.EnumsHandling.Integration.FailedOrSkippedDeserializationDetection.Serialization.EnsureThatEnumTypesInvolvedInsideControllerActionSignaturesCanBeDetectFailedOrSkippedDeserialization(runtimeValidator);
+}

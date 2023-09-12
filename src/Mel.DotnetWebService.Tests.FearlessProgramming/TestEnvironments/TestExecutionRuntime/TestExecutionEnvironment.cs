@@ -4,6 +4,19 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestEx
 
 static class TestExecutionEnvironment
 {
+	public static IReadOnlyCollection<Type> All_Types_Defined_By_Our_Organization
+	=> _all_types_defined_by_our_organization.Value;
+
+	static readonly Lazy<IReadOnlyCollection<Type>> _all_types_defined_by_our_organization = new(() =>
+		TestExecutionEnvironment.All_Known_Assemblies
+			.SelectMany(assembly =>
+				assembly
+					.GetTypes()
+					.SelectMany(t => new [] { t }.Concat(t.GetNestedTypes()))
+					.Where(t => t.IsDefinedByOurOrganization()))
+			.Distinct()
+			.ToArray());
+
 	public static IReadOnlyCollection<Assembly> All_Known_Assemblies
 	=> _all_known_assemblies.Value;
 
@@ -22,4 +35,3 @@ static class TestExecutionEnvironment
 			.ToArray()
 	);
 }
-
