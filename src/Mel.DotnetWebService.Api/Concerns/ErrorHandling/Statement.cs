@@ -14,7 +14,7 @@ class Statement
 		};
 	}
 
-	public static Statement FromString(string str)
+	public static Statement FromString(string? str)
 	=> new(str);
 
 	public static implicit operator string(Statement statement)
