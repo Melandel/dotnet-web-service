@@ -1,5 +1,6 @@
 ﻿
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCustomSerializationSettings();
 builder.Services.AddCustomControllers();
 builder.Services.AddCustomSwaggerGenerator();
 builder.Services.AddCustomExceptionHandlingCompliantWithRfc9457();
