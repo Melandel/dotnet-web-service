@@ -6,28 +6,42 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 
 class Types
 {
+	public static IReadOnlyCollection<Type> AllControllerTypesDefinedByOurOrganization
+	=> _allControllerTypesDefinedByOurOrganization switch
+	{
+		[_,..] types => types,
+		_ => throw TestDataIntegrityException.GeneratedBy(typeof(Types), nameof(Types.AllControllerTypesDefinedByOurOrganization), "Found no type matching this criteria")
+	};
+
+	public static IReadOnlyCollection<Type> AllEnumTypesDefinedByOurOrganization
+	=> _allEnumTypesDefinedByOurOrganization switch
+	{
+		[_, ..] enumTypes => enumTypes,
+		_ => throw TestDataIntegrityException.GeneratedBy(typeof(Types), nameof(Types.AllEnumTypesDefinedByOurOrganization), "Found no type matching this criteria")
+	};
+
 	public static IReadOnlyCollection<Type> AllConcreteConstrainedTypes
 	=> _allConcreteConstrainedTypes.Value;
 
-	public static IReadOnlyCollection<Type> AllControllerTypesDefinedByOurOrganization
-	{
-		get
-		{
-			var types = _all_known_assemblies.Value
-				.SelectMany(asmb => asmb
+	static Type[] _allControllerTypesDefinedByOurOrganization
+	=> _all_types_defined_by_our_organization.Value
+		.Where(t => t.IsSubclassOf(typeof(Microsoft.AspNetCore.Mvc.ControllerBase)))
+		.ToArray();
+
+	static Type[] _allEnumTypesDefinedByOurOrganization
+	=> _all_types_defined_by_our_organization.Value
+		.Where(t => t.IsEnum)
+		.ToArray();
+
+	static readonly Lazy<IReadOnlyCollection<Type>> _all_types_defined_by_our_organization = new(() =>
+		_all_known_assemblies.Value
+			.SelectMany(assembly =>
+				assembly
 					.GetTypes()
 					.SelectMany(t => new [] { t }.Concat(t.GetNestedTypes()))
-					.Where(t => t.IsDefinedByOurOrganization() && t.IsSubclassOf(typeof(Microsoft.AspNetCore.Mvc.ControllerBase))))
-				.Distinct()
-				.ToArray();
-
-			return types switch
-			{
-				[_,..] => types,
-				_ => throw TestDataIntegrityException.GeneratedBy(typeof(Types), nameof(Types.AllControllerTypesDefinedByOurOrganization), "Found no type matching this criteria")
-			};
-		}
-	}
+					.Where(t => t.IsDefinedByOurOrganization()))
+			.Distinct()
+			.ToArray());
 
 	static readonly Lazy<IReadOnlyCollection<Type>> _allConcreteConstrainedTypes = new(
 		() =>
@@ -66,4 +80,3 @@ class Types
 			.ToArray()
 	);
 }
-
