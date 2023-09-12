@@ -26,6 +26,7 @@ static class WebApplicationExtensionMethods
 	{
 		var runtimeValidator = app.Services.GetRequiredService<Concerns.RuntimeValidation.RuntimeValidator>();
 		runtimeValidator.EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized();
+		runtimeValidator.EnsureThatEnumTypesInvolvedInsideControllerActionSignaturesCanBeDetectFailedOrSkippedDeserialization();
 
 		return app;
 	}

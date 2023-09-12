@@ -17,6 +17,20 @@ class HttpProblemOccurrence
 		ProblemSpecificInformation = problemSpecificInformation;
 	}
 
+	public static HttpProblemOccurrence FromIncorrectApiUsage(
+		Uri id,
+		string statementDescribingIncorrectApiUsage,
+		string? statementHelpingApiUserTowardsCorrectApiUsage,
+		IDictionary<HttpProblemTypeExtensionMember, object> problemSpecificInformation)
+	=> new(
+		id,
+		(statementDescribingIncorrectApiUsage, statementHelpingApiUserTowardsCorrectApiUsage) switch
+		{
+			(_, null or "") => Statement.ApplyConstraintsTo(statementDescribingIncorrectApiUsage),
+			_ => Statement.ApplyConstraintsTo(statementDescribingIncorrectApiUsage) + Statement.ApplyConstraintsTo(statementHelpingApiUserTowardsCorrectApiUsage)
+		},
+		problemSpecificInformation.AsReadOnly());
+
 	public static HttpProblemOccurrence FromDeveloperMistakeInThisApi(
 		Uri id,
 		string apologeticStatement,

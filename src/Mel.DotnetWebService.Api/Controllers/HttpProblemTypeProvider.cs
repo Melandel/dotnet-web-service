@@ -56,4 +56,8 @@ public class HttpProblemTypeProvider : ApiController
 	[HttpGet]
 	public HttpProblemType GetDeveloperMistake()
 	=> new DeveloperMistake(BuildFullRouteToProblemType(), _hostEnv);
+
+	[HttpGet]
+	public HttpProblemType GetEnumValueReceivedFromInteger()
+	=> new EnumValueReceivedFromInteger(BuildFullRouteToProblemType());
 }
