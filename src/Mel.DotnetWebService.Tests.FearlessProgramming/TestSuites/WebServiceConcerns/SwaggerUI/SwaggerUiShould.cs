@@ -1,10 +1,7 @@
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.SwaggerUI;
 
-class SwaggerUiShould
+class SwaggerUiShould : TestSuiteUsingTestServer
 {
-	static readonly InMemoryTestServer TestServer;
-	static SwaggerUiShould() => TestServer = InMemoryTestServer.Create();
-
 	[Test]
 	public async Task Appear_Without_Error_When_Querying_SwaggerUI_Url()
 	{
