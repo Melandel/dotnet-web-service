@@ -1,13 +1,13 @@
-﻿namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites;
+﻿namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.Routing;
 
-class StubbedEndpointsSpecificallyCreatedForTestsShould
+class RoutingShould
 {
 	[Test]
-	public async Task Return_HelloWorld_When_Pinged()
+	public async Task Create_Urls_Using_KebabCase_AKA_Hyphen_Separated_Lower_Case_Words()
 	{
 		// Arrange
 		var testServer = InMemoryTestServer.Create();
-		var requestUri = "StubbedEndpointsSpecificallyCreatedForTests";
+		var requestUri = "stubbed-endpoints-specifically-created-for-tests/hello-world";
 
 		// Act
 		var httpResponse = await testServer.HttpClient.GetAsync(requestUri);
@@ -18,3 +18,4 @@ class StubbedEndpointsSpecificallyCreatedForTestsShould
 		Assert.That(response, Is.EqualTo("hello world"));
 	}
 }
+
