@@ -6,7 +6,7 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDo
 static class ControllerTestDoubles
 {
 	[ApiController]
-	[Route("[controller]")]
+	[Route("[controller]/[action]")]
 	public class StubbedEndpointsSpecificallyCreatedForTests : ControllerBase
 	{
 		readonly ILogger<StubbedEndpointsSpecificallyCreatedForTests> _logger;
@@ -16,7 +16,7 @@ static class ControllerTestDoubles
 			_logger = logger;
 		}
 
-		[HttpGet(Name = "ping")]
+		[HttpGet]
 		public string HelloWorld() => "hello world";
 	}
 }
