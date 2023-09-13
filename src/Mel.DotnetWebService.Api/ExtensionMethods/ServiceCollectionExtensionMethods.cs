@@ -2,6 +2,14 @@ namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
 {
+	public static IServiceCollection AddCustomControllers(this IServiceCollection services)
+	{
+		services.AddControllers();
+		services.ConfigureOptions<Concerns.Routing.RouteNamingConvention.UseKebabCaseAsRouteNamingConvention>();
+
+		return services;
+	}
+
 	public static IServiceCollection AddCustomSwaggerGeneration(this IServiceCollection services)
 	{
 		services

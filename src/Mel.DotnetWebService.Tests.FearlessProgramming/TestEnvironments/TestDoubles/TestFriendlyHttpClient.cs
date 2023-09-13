@@ -1,3 +1,5 @@
+using Mel.DotnetWebService.Api.Concerns.Routing.RouteNamingConvention;
+
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles;
 
 internal class TestFriendlyHttpClient
@@ -5,6 +7,7 @@ internal class TestFriendlyHttpClient
 	readonly HttpClient _httpClient;
 	readonly List<HttpResponseMessage> _httpResponseMessagesInvolvedCurrentTest;
 	readonly Func<HttpResponseMessage, HttpResponseMessage> _keepTraceOf;
+	static readonly KebabCaseConverter KebabCaseConverter = new KebabCaseConverter();
 	TestFriendlyHttpClient(
 		HttpClient httpClient,
 		List<HttpResponseMessage> httpResponseMessagesInvolvedInCurrentTest)
@@ -19,6 +22,22 @@ internal class TestFriendlyHttpClient
 		return new(httpClient, httpResponseMessagesInvolvedInCurrentTest);
 	}
 
+	public async Task<HttpResponseMessage> DeleteAsync<TController>(string controllerMethodName) => await DeleteAsync(BuildRequestUri<TController>(controllerMethodName));
+	public async Task<HttpResponseMessage> GetAsync<TController>(string controllerMethodName) => await GetAsync(BuildRequestUri<TController>(controllerMethodName));
+	public async Task<HttpResponseMessage> PatchAsync<TController>(string controllerMethodName, HttpContent content) => await PatchAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	public async Task<HttpResponseMessage> PostAsync<TController>(string controllerMethodName, HttpContent content) => await PostAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	public async Task<HttpResponseMessage> PutAsync<TController>(string controllerMethodName, HttpContent content) => await PutAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	static string BuildRequestUri<TController>(string controllerMethodName)
+	{
+		var routeName = KebabCaseParameterTransformer.RemoveAnyHttpVerbPrefix(controllerMethodName);
+
+		var requestUri = String.Format(
+			"{0}/{1}",
+			KebabCaseConverter.Convert(typeof(TController).Name),
+			KebabCaseConverter.Convert(routeName));
+
+		return requestUri;
+	}
 	public async Task<HttpResponseMessage> DeleteAsync(Uri requestUri)                                         => _keepTraceOf(await _httpClient.DeleteAsync(requestUri));
 	public async Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken cancellationToken) => _keepTraceOf(await _httpClient.DeleteAsync(requestUri, cancellationToken));
 	public async Task<HttpResponseMessage> DeleteAsync(string requestUri)                                      => _keepTraceOf(await _httpClient.DeleteAsync(requestUri));
