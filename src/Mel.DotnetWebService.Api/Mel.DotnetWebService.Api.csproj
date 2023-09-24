@@ -11,4 +11,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Mel.DotnetWebService.Tests.FearlessProgramming" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+    <_Parameter1>Mel.DotnetWebService.Tests.FearlessProgramming</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
