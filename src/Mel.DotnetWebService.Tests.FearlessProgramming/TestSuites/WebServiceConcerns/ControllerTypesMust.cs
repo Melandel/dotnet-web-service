@@ -1,4 +1,4 @@
-namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.CodingStandards;
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns;
 
 class ControllerTypesMust : TestSuiteUsingTestServer
 {
@@ -8,7 +8,7 @@ class ControllerTypesMust : TestSuiteUsingTestServer
 		.ParallelForEach(controllerType =>
 		{
 			Assert.That(
-				controllerType.IsEqualOrSubclassOf(typeof(Api.Controllers.ApiController)),
+				controllerType.IsEqualOrSubclassOf(typeof(Api.ApiController)),
 				Is.True);
 		});
 }

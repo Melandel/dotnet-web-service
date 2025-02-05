@@ -1,11 +1,10 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace Mel.DotnetWebService.Api.Controllers;
+namespace Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 
 [ApiVersion("1")]
 [Route("api/v{version:apiVersion}/http-problem-types/[action]")]
@@ -46,7 +45,7 @@ public class HttpProblemTypeProvider : ApiController
 			.Where(methodInfo => methodInfo.ReturnType == typeof(HttpProblemType));
 
 		var httpProblemTypes = methods
-			.Select(methodInfo => methodInfo.Invoke(obj: this, parameters:	 null))
+			.Select(methodInfo => methodInfo.Invoke(obj: this, parameters: null))
 			.Cast<HttpProblemType>()
 			.ToArray();
 
