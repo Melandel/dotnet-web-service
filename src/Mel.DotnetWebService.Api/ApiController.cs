@@ -1,6 +1,7 @@
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Mel.DotnetWebService.Api.Controllers;
+namespace Mel.DotnetWebService.Api;
 
 [ApiController]
 [Concerns.ErrorHandling.Rfc9457.AccessToReceivingControllerContext.StoreReceivingControllerContextInsideHttpContext]
