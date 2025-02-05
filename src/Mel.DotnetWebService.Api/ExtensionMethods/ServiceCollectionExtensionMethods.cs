@@ -1,3 +1,5 @@
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
+
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
 
 static class ServiceCollectionExtensionMethods
@@ -59,7 +61,7 @@ static class ServiceCollectionExtensionMethods
 
 	public static IServiceCollection AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware(this IServiceCollection services)
 	{
-		services.AddScoped<Controllers.HttpProblemTypeProvider>();
+		services.AddScoped<HttpProblemTypeProvider>();
 		services.AddHttpContextAccessor();
 		return services;
 	}
