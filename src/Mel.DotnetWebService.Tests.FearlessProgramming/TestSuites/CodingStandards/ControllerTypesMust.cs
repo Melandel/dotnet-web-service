@@ -12,7 +12,7 @@ class ControllerTypesMust
 	public void Inherit_From_AbstractClass_ApiController(Type controllerType)
 	{
 		Assert.That(
-			controllerType.IsEqualOrSubclassOf(typeof(Api.Controllers.ApiController)),
+			controllerType.IsEqualOrSubclassOf(typeof(Api.ApiController)),
 			Is.True);
 	}
 }

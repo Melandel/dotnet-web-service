@@ -1,4 +1,5 @@
 using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 
 namespace Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ExceptionProcessing;
 
@@ -12,7 +13,7 @@ static class ExceptionToHttpProblemConversion
 			var someFormOfRequestId = System.Diagnostics.Activity.Current?.Id ?? httpContext.TraceIdentifier;
 			var someFormOfIdentifierForTheProblemOccurrence = new Uri(baseApiUrl, someFormOfRequestId);
 
-			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<Controllers.HttpProblemTypeProvider>();
+			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<HttpProblemTypeProvider>();
 
 			switch (exception)
 			{
