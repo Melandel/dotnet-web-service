@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling;
 using Mel.DotnetWebService.Api.Concerns.ErrorHandling.HttpProblemTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
-namespace Mel.DotnetWebService.Api.Controllers;
+namespace Mel.DotnetWebService.Api.Concerns.ErrorHandling;
 
 [ApiVersion("1")]
 [Route("api/v{version:apiVersion}/http-problem-types/[action]")]
