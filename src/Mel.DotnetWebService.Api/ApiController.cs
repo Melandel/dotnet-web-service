@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mel.DotnetWebService.Api.Concerns.ErrorHandling;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Mel.DotnetWebService.Api.Controllers;
+namespace Mel.DotnetWebService.Api;
 
 [ApiController]
 [Concerns.ErrorHandling.ActionFilters.StoreReceivingControllerContextInsideHttpContext]
