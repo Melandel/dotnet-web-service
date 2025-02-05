@@ -1,4 +1,5 @@
 using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 
 namespace Mel.DotnetWebService.Api.Concerns.EnumsHandling.IntegerToEnumTypeProhibition.ErrorHandling.ExceptionToHttpProblemConversion;
 
@@ -7,7 +8,7 @@ static class EnumValueReceivedFromIntegerExceptionConversion
 	public static HttpProblem ConvertEnumValueReceivedFromIntegerException(
 		EnumValueReceivedFromIntegerException ex,
 		Uri someFormOfIdentifierForTheProblemOccurrence,
-		Controllers.HttpProblemTypeProvider httpProblemTypeProvider)
+		HttpProblemTypeProvider httpProblemTypeProvider)
 	=> HttpProblem.From(
 		httpProblemTypeProvider.GetEnumValueReceivedFromInteger(),
 		HttpProblemOccurrence.FromIncorrectApiUsage(
