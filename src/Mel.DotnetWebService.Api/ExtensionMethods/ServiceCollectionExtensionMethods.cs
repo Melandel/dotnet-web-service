@@ -45,7 +45,7 @@ static class ServiceCollectionExtensionMethods
 
 	public static IServiceCollection AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware(this IServiceCollection services)
 	{
-		services.AddScoped<Controllers.HttpProblemTypeProvider>();
+		services.AddScoped<Concerns.ErrorHandling.HttpProblemTypeProvider>();
 		services.AddHttpContextAccessor();
 		return services;
 	}
