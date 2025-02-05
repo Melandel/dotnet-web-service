@@ -12,7 +12,7 @@ static class ExceptionExtensionMethods
 			var someFormOfRequestId = System.Diagnostics.Activity.Current?.Id ?? httpContext.TraceIdentifier;
 			var someFormOfIdentifierForTheProblemOccurrence = new Uri(baseApiUrl, someFormOfRequestId);
 
-			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<Controllers.HttpProblemTypeProvider>();
+			var httpProblemTypeProvider = httpContext.RequestServices.GetRequiredService<HttpProblemTypeProvider>();
 
 			switch (exception)
 			{
