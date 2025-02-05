@@ -1,4 +1,4 @@
-using Mel.DotnetWebService.Api.Controllers;
+using Mel.DotnetWebService.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using static Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes.ClassArchetype;
