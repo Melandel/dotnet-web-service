@@ -1,3 +1,5 @@
+using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes.DotnetPrimitiveTypes;
+
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 
 class WebApiRoutes

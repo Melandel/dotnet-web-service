@@ -1,0 +1,98 @@
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
+using System.Diagnostics;
+
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.PerformanceBenchmarks.CrossCuttingConcerns.DataValidity.ConstrainedTypes;
+
+[Explicit]
+class ConstrainedTypeConversionBenchmarks
+{
+	[Test]
+	public void NonEmptyGuid_Conversion()
+	{
+		var nbIterations = 1000;
+		var nbIterationsAfterInitialCall = nbIterations + 1;
+		var v = ConstrainedTypeInfos.TryGet(typeof(NonEmptyGuid), out var constrainedTypeInfo);
+		var nonEmptyGuids = new NonEmptyGuid[nbIterationsAfterInitialCall];
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			nonEmptyGuids[i] = NonEmptyGuid.ApplyConstraintsTo(Guid.NewGuid());
+		}
+
+		var sw = Stopwatch.StartNew();
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = (Guid)nonEmptyGuids[i];
+		}
+		var elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} NonEmptyGuid.ImplicitConversionToGuid (direct static method call)");
+
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = constrainedTypeInfo.InvokeImplicitConversionToRootType(nonEmptyGuids[i]);
+		}
+		elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} MethodInfo.Compile.Invoke (reflection on interface method)");
+	}
+
+	[Test]
+	public void NonEmptyHashSet_Conversion()
+	{
+		var nbIterations = 1000;
+		var nbIterationsAfterInitialCall = nbIterations + 1;
+		var v = ConstrainedTypeInfos.TryGet(typeof(NonEmptyHashSet<>), out var constrainedTypeInfo);
+		var arrayOfNonEmptyHashSets = new List<NonEmptyHashSet<Guid>>(nbIterationsAfterInitialCall);
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			arrayOfNonEmptyHashSets.Add(NonEmptyHashSet.CreateFromElements(new Guid[] { Guid.NewGuid() }));
+		}
+
+		var sw = Stopwatch.StartNew();
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = (HashSet<Guid>)arrayOfNonEmptyHashSets[i];
+		}
+		var elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} NonEmptyHashSet.ImplicitConversionToGuid (direct static method call)");
+
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = constrainedTypeInfo.InvokeImplicitConversionToRootType(arrayOfNonEmptyHashSets[i]);
+		}
+		elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} MethodInfo.Compile.Invoke (reflection on interface method)");
+	}
+
+	[Test]
+	public void NonEmptyDictionary_Conversion()
+	{
+		var nbIterations = 1000;
+		var nbIterationsAfterInitialCall = nbIterations + 1;
+		var v = ConstrainedTypeInfos.TryGet(typeof(NonEmptyDictionary<,>), out var constrainedTypeInfo);
+		var arrayOfNonEmptyDictionaries = new List<NonEmptyDictionary<Guid, Guid>>(nbIterationsAfterInitialCall);
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			arrayOfNonEmptyDictionaries.Add(NonEmptyDictionary.CreateFromSingleKeyValuePair(Guid.NewGuid(), Guid.NewGuid()));
+		}
+
+		var sw = Stopwatch.StartNew();
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = (Dictionary<Guid, Guid>)arrayOfNonEmptyDictionaries[i];
+		}
+		var elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} NonEmptyDictionary.ImplicitConversionToDictionary (direct static method call)");
+
+		for (var i = 0; i < nbIterationsAfterInitialCall; i++)
+		{
+			if (i == 1) { sw.Restart(); }
+			var x = constrainedTypeInfo.InvokeImplicitConversionToRootType(arrayOfNonEmptyDictionaries[i]);
+		}
+		elapsed = sw.Elapsed;
+		Console.WriteLine($"{elapsed.TotalMilliseconds,10:N2} ms (mean:{elapsed.TotalNanoseconds / nbIterations,3:N0} ns) spent calling {nbIterations:N0} MethodInfo.Compile.Invoke (reflection on interface method)");
+	}
+}

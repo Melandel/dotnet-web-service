@@ -1,8 +1,13 @@
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction;
+using System.Reflection;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
 using Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.ErrorHandling.Rfc9457;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestServers;
 
@@ -12,6 +17,16 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	readonly DeploymentEnvironment _deploymentEnvironment;
 	readonly Lazy<HttpProblemTypeArchetype.Deserializable[]> _httpProblemTypes;
 	public TestFriendlyHttpClient HttpClient => CreateHttpClient();
+	public OpenApiDocument OpenApiDocument { get; private set; }
+
+	static InMemoryTestServer()
+	{
+		// 👇 Constrained types from the test assembly are loaded before the first InMemoryTestServer is instanciated
+		// Justification: We are going to inject Controller methods whose signatures include constrained types
+		//   and they need to be loaded for the OpenApi document to take them into account
+		ConstrainedTypeInfos.LoadConstrainedTypesDeclaredIn(Assembly.GetExecutingAssembly());
+	}
+
 	InMemoryTestServer(DeploymentEnvironment deploymentEnvironment)
 	{
 		_httpResponseMessagesByTestId = new Dictionary<string, List<HttpResponseMessage>>();
@@ -43,7 +58,11 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 						WebServiceShould.Implementent_Rfc9457.TestThatSpecificallyRequiresServiceNotInjected);
 			});
 
-		return base.CreateHost(builder);
+		var host = base.CreateHost(builder);
+		var openApiDocumentBuilder = host.Services.GetRequiredService<ISwaggerProvider>();
+		OpenApiDocument = openApiDocumentBuilder.GetSwagger("v1");
+
+		return host;
 	}
 
 	public static InMemoryTestServer Create(DeploymentEnvironment deploymentEnvironment = DeploymentEnvironment.Production)
@@ -80,4 +99,29 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	public HttpProblemType GetHttpProblemTypeByName(string httpProblemTypeName)
 	=> _httpProblemTypes.Value
 		.Single(httpProblemType => httpProblemType.Uri.ToString().EndsWith(httpProblemTypeName));
+
+	public OpenApiOperation GetRouteDocumentation<TController>(string controllerMethod, HttpMethod httpMethod)
+	=> GetRouteDocumentationFromDocumentPath<TController>(
+		$"/{TestFriendlyHttpClient.BuildRequestUri<TController>(controllerMethod)}",
+		httpMethod);
+
+	public OpenApiOperation GetRouteDocumentation<TController>(string controllerMethod, string routeSuffix, HttpMethod httpMethod)
+	=> GetRouteDocumentationFromDocumentPath<TController>(
+		$"/{TestFriendlyHttpClient.BuildRequestUri<TController>(controllerMethod)}{routeSuffix}",
+		httpMethod);
+
+	OpenApiOperation GetRouteDocumentationFromDocumentPath<TController>(string openApiDocumentPath, HttpMethod httpMethod)
+	{
+		var operationType = httpMethod switch
+		{
+			_ when httpMethod == HttpMethod.Delete => OperationType.Delete,
+			_ when httpMethod == HttpMethod.Get => OperationType.Get,
+			_ when httpMethod == HttpMethod.Patch => OperationType.Patch,
+			_ when httpMethod == HttpMethod.Post => OperationType.Post,
+			_ when httpMethod == HttpMethod.Put => OperationType.Put,
+			_ => throw new NotImplementedException()
+		};
+
+		return OpenApiDocument.Paths[openApiDocumentPath].Operations[operationType];
+	}
 }

@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction;
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.HttpProblemTypes;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.HttpProblemTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 
