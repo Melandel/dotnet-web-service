@@ -1,6 +1,4 @@
-﻿using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes;
-
-namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
+﻿namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 
 class WebApiRoutes
 {
