@@ -1,4 +1,5 @@
 ﻿using Mel.DotnetWebService.Api.Controllers;
+using Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.Guids;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -60,5 +61,8 @@ static class ControllerTestDoubles
 
 		[HttpGet]
 		public Guid GuidPassThrough(Guid guid) => guid;
+
+		[HttpGet]
+		public Guid NonEmptyGuidPassThrough(NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
 	}
 }
