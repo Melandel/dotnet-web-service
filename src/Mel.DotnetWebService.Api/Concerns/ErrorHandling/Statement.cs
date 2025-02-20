@@ -8,8 +8,8 @@ class Statement
 		_encapsulated = str switch
 		{
 			null => "",
-			[var firstCharacter, ..] when !Char.IsUpper(firstCharacter) => throw ObjectConstructionException.WhenConstructing<Statement>(nameof(_encapsulated), str, $"A {nameof(Statement)} starts with an upper-case letter."),
-			[.., var lastCharacter] when lastCharacter is not '.' => throw ObjectConstructionException.WhenConstructing<Statement>(nameof(_encapsulated), str, $"A {nameof(Statement)} ends with a dot."),
+			[var firstCharacter, ..] when !Char.IsUpper(firstCharacter) => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(_encapsulated), str, $"A {nameof(Statement)} starts with an upper-case letter."),
+			[.., var lastCharacter] when lastCharacter is not '.' => throw ObjectConstructionException.WhenConstructingAMemberFor<Statement>(nameof(_encapsulated), str, $"A {nameof(Statement)} ends with a dot."),
 			_ => str
 		};
 	}
