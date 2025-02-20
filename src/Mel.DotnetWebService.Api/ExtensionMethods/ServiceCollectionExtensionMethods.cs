@@ -5,8 +5,10 @@ static class ServiceCollectionExtensionMethods
 	public static IServiceCollection AddCustomControllersAndCustomApiVersioning(this IServiceCollection services)
 	{
 		services.AddControllers();
-		services.ConfigureOptions<Concerns.Routing.RouteNamingConvention.UseKebabCaseAsRouteNamingConvention>();
-
+		services
+			.ConfigureOptions<Concerns.Routing.RouteNamingConvention.UseKebabCaseAsRouteNamingConvention>()
+			.ConfigureOptions<Concerns.DataValidity.ConstrainedTypes.ModelBinding.ProcessConstrainedTypesExactlyLikeTheirRootType>()
+			.ConfigureOptions<Concerns.DataValidity.ConstrainedTypes.Serialization.ProcessConstrainedTypesExactlyLikeTheirRootType>();
 		services
 			.AddVersionedApiExplorer()
 			.ConfigureOptions<Concerns.Versioning.Routing.UseApiVersionInUris>();
@@ -24,7 +26,10 @@ static class ServiceCollectionExtensionMethods
 			.AddSwaggerGen()
 			.AddEndpointsApiExplorer()
 			.ConfigureOptions<Concerns.Versioning.SwaggerGeneration.CreateOneSwaggerForEachApiVersion>()
-			.ConfigureOptions<Concerns.SwaggerGeneration.WebServiceMetadataDocumentation.ProvideWebServiceWithTitleAndDescription>();
+			.ConfigureOptions<Concerns.SwaggerGeneration.WebServiceMetadataDocumentation.ProvideWebServiceWithTitleAndDescription>()
+			.AddTransient<Concerns.DataValidity.ConstrainedTypes.Serialization.RuntimeControllerActionsAnalyzer>()
+			.ConfigureOptions<Concerns.DataValidity.ConstrainedTypes.SwaggerGeneration.ProcessConstrainedTypesExactlyLikeTheirRootType>();
+
 		return services;
 	}
 
@@ -50,6 +55,13 @@ static class ServiceCollectionExtensionMethods
 	{
 		services.AddScoped<Controllers.HttpProblemTypeProvider>();
 		services.AddHttpContextAccessor();
+		return services;
+	}
+
+	public static IServiceCollection AddCustomRuntimeValidation(this IServiceCollection services)
+	{
+		services.AddSingleton<Concerns.RuntimeValidation.ControllerActionsExplorer>();
+		services.AddSingleton<Concerns.RuntimeValidation.RuntimeValidator>();
 		return services;
 	}
 }

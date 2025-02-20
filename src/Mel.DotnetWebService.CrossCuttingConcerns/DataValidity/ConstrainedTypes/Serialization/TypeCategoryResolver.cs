@@ -1,0 +1,77 @@
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Serialization.WritingOperations;
+
+namespace Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Serialization;
+
+static class TypeCategoryResolver
+{
+	static readonly Dictionary<Type, TypeCategory> categoriesByType = new Dictionary<Type, TypeCategory>();
+	public static TypeCategory ResolveFor(Type type)
+	{
+		if (!categoriesByType.ContainsKey(type))
+		{
+			categoriesByType.Add(
+				type,
+				type switch
+				{
+					var t when IsDictionary<string, ObjectTypeSpecificallyGeneratedForSerializationPurposes>(t) => TypeCategory.DictionaryInvolvingValuesWhoseTypeWasSpecificallyGeneratedForSerializationPurposes,
+					var t when IsCollectionOf<ObjectTypeSpecificallyGeneratedForSerializationPurposes>(t) => TypeCategory.CollectionOfItemsWhoseTypeWasSpecificallyGeneratedForSerializationPurposes,
+					var t when Is<ObjectTypeSpecificallyGeneratedForSerializationPurposes>(t) => TypeCategory.ObjectTypeSpecificallyGeneratedForSerializationPurposes,
+					var t when IsDictionaryInvolvingZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(t) => TypeCategory.CollectionOfKeyValuePairsInvolvingAConstrainedType,
+					var t when IsCollectionOfZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(t) => TypeCategory.CollectionInvolvingAConstrainedType,
+					var t when IsConstrainedGenericCollectionType(t) => t is { IsGenericType: true }
+						? TypeCategory.ConstrainedGenericCollectionType
+						: TypeCategory.ConstrainedNonGenericCollectionType,
+					var t when IsAConstainedType(t) => TypeCategory.ConstrainedValueType,
+					var t when IsADataStructureThatConstainsAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(t) => TypeCategory.DataStructureInvolvingAConstrainedType,
+					_ => TypeCategory.UnrelatedToConstrainedType
+				});
+		}
+
+		return categoriesByType[type];
+	}
+	static bool Is<T>(Type t)
+	{
+		return t == typeof(T);
+	}
+
+	static bool IsCollectionOf<T>(Type t)
+	{
+		return t.IsReadOnlyCollectionWithoutBeingString() && (t.IsAGenericCollectionType(argType => argType == typeof(T)) || t.IsAGenericDictionaryType(argType => argType == typeof(T)));
+	}
+	static bool IsKeyValuePair<TKey, TValue>(Type t)
+	{
+		return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>) && t.GetGenericArguments().First() == typeof(TKey) && t.GetGenericArguments().Last() == typeof(TValue);
+	}
+
+	static bool IsDictionary<TKey, TValue>(Type t)
+	{
+		return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>) && t.GetGenericArguments().First() == typeof(TKey) && t.GetGenericArguments().Last() == typeof(TValue);
+	}
+	static bool IsConstrainedGenericCollectionType(Type t)
+	{
+		return t.ImplementsGenericInterface(typeof(IConstrainedCollection<,>), out _);
+	}
+	static bool IsAConstainedType(Type t)
+	{
+		return Runtime.ConstrainedTypeInfos.Include(t)
+			|| t.IsGenericType && Runtime.ConstrainedTypeInfos.Include(t.GetGenericTypeDefinition());
+	}
+
+	static bool IsADataStructureThatConstainsAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(Type t)
+	{
+		return t.IsOrInvolvesAConstrainedType();
+	}
+
+	static bool IsCollectionOfZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(Type t)
+	=> t.IsEnumerableWithoutBeingString()
+		&& t.ImplementsGenericIEnumerableWithAnArgumentTypeThatVerifies(argType =>
+			argType.IsOrInvolvesAConstrainedType()
+		|| IsCollectionOfZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(argType)
+		|| IsDictionaryInvolvingZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(argType));
+
+	static bool IsDictionaryInvolvingZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(Type t)
+	=> t.IsAGenericDictionaryType(argType =>
+		argType.IsOrInvolvesAConstrainedType()
+		|| IsCollectionOfZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(argType)
+		|| IsDictionaryInvolvingZeroOrNLevelsOfCollectionsOrDictionariesWhoseItemsContainAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems(argType));
+}
