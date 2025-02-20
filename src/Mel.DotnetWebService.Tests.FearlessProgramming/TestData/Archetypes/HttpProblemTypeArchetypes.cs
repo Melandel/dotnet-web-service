@@ -1,4 +1,4 @@
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes;
 

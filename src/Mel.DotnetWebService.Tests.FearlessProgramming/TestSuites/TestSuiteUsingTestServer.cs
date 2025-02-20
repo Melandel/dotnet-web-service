@@ -1,7 +1,8 @@
-﻿using NUnit.Framework.Interfaces;
+using NUnit.Framework.Interfaces;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites;
 
+[Parallelizable(ParallelScope.Children)]
 abstract class TestSuiteUsingTestServer
 {
 	protected static readonly InMemoryTestServer TestServer;

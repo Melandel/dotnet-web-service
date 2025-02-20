@@ -1,3 +1,6 @@
+using System.Reflection;
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
+
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 
 class Types
@@ -19,6 +22,30 @@ class Types
 				[_,..] => types,
 				_ => throw TestDataIntegrityException.GeneratedBy(typeof(Types), nameof(Types.AllControllerTypesDefinedByOurOrganization), "Found no type matching this criteria")
 			};
+		}
+	}
+
+	public static IReadOnlyCollection<Type> AllConcreteConstrainedTypes
+	{
+		get
+		{
+			ConstrainedTypeInfos.LoadConstrainedTypesDeclaredIn(Assembly.GetExecutingAssembly(), forceReload: true);
+
+			var types = TestExecutionEnvironment.All_Known_Assemblies
+				.Where(asmb => !asmb.FullName.StartsWith("System") && !asmb.FullName.StartsWith("Microsoft") && !asmb.FullName.StartsWith("netstandard"))
+				.Distinct()
+				.SelectMany(asmb =>
+				{
+						var v = asmb
+							.GetTypes()
+							.SelectMany(t => new[] { t }.Concat(t.GetNestedTypes()))
+							.Where(t => !t.IsAbstract && !t.IsGenericType && ConstrainedTypeInfos.Include(t));
+					return v;
+					})
+				.Distinct()
+				.ToNonEmptyHashSet();
+
+			return types;
 		}
 	}
 }
