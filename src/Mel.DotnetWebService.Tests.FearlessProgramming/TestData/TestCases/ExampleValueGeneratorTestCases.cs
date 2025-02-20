@@ -1,0 +1,284 @@
+using System.Globalization;
+using Mel.DotnetWebService.Tests.FearlessProgramming.FrameworkExtension.NUnitCustomizations.TestCases;
+
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
+
+
+public class ExampleValueGeneratorTestCases
+{
+	public record TestCase(Type Type, string ExpectedStringRepresentationForSalt1);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> AllTestCasesAggregatedIntoOne
+	=> AllLeafObjectTestCasesAggregatedIntoOne.AddVariations(BuildParentObjectContainers);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> AllTestCasesExceptThoseInvolvingSingletonsAggregatedIntoOne
+	=> AllLeafObjectTestCasesAggregatedIntoOne
+		.Where(aggregatedTestCases => aggregatedTestCases != SingletonAccessExposingTypes)
+		.AddVariations(BuildParentObjectContainers);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> DeserializationFriendlyTestCasesAggregatedIntoOne
+	=> DeserializationFriendlyLeafObjectsAggregatedIntoSingleTestCase.AddVariations(BuildParentObjectContainers);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> DeserializationAdverseTestCasesAggregatedIntoOne
+	=> DeserializationAdverseLeafObjectsAggregatedIntoSingleTestCase.AddVariations(BuildParentObjectContainers);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> AllLeafObjectTestCasesAggregatedIntoOne
+	=> DeserializationFriendlyLeafObjectsAggregatedIntoSingleTestCase
+		.Concat(DeserializationAdverseLeafObjectsAggregatedIntoSingleTestCase);
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> DeserializationFriendlyLeafObjectsAggregatedIntoSingleTestCase
+	{
+		get
+		{
+			// 👇 Scalar value types
+			yield return NativeValueTypes;
+			yield return SystemTypesThatCanThrowOnInstanciation;
+			yield return GenericTypes;
+			yield return EnumTypes;
+			yield return ConstrainedValueTypes;
+
+			// 👇 Collection types
+			yield return NativeCollectionTypes;
+			yield return ConstrainedCollectionTypes;
+			yield return CollectionOfCollectionsTypes;
+			yield return CollectionOfKeyValuePairsTypes;
+
+			// 👇 Collection of KeyValuePairs types
+			yield return NativeKeyValuePairsTypes;
+			yield return ConstrainedKeyValuePairsTypes;
+			yield return KeyValuePairsOfCollectionTypes;
+			yield return KeyValuePairsOfKeyValuePairTypes;
+
+			// 👇 Structures holding data
+			yield return NonGenericConstrainedCollectionTypes;
+			yield return NonGenericConstrainedCollectionOfKeyValuePairsTypes;
+			yield return DeserializationFriendlyPublicInstantiationOperationsExposingTypes;
+		}
+	}
+
+	public static IEnumerable<TestCasesAggregation<TestCase>> DeserializationAdverseLeafObjectsAggregatedIntoSingleTestCase
+	{
+		get
+		{
+			yield return DeserializationAdversePublicInstantiationOperationsExposingTypes;
+			yield return SingletonAccessExposingTypes;
+			yield return InstancesAccessExposingTypes;
+		}
+	}
+
+	static TestCase BuildParentObjectContainers(TestCase testCase)
+	=> new TestCase(
+		typeof(ClassArchetype.PositionalRecordTypeContainingGenericValue<>).MakeGenericType(testCase.Type),
+		$"{{\"Value\":{testCase.ExpectedStringRepresentationForSalt1}}}");
+
+	static readonly TestCasesAggregation<TestCase> NativeValueTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(int),            "1"),
+		new(typeof(string),         "\"foo\""),
+		new(typeof(Guid),           "\"00000000-0000-0000-0000-000000000001\""),
+		new(typeof(DateTime),       "\"2000-02-01T21:20:19\""),
+		new(typeof(DateTimeOffset), "\"2010-02-01T06:05:04+01:00\""),
+		new(typeof(decimal),        "1"),
+		new(typeof(double),         "1"),
+		new(typeof(float),          "1"),
+		new(typeof(byte),           "1"),
+		new(typeof(long),           "1"),
+		new(typeof(sbyte),          "1"),
+		new(typeof(short),          "1"),
+		new(typeof(uint),           "1"),
+		new(typeof(ulong),          "1"),
+		new(typeof(ushort),         "1"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> SystemTypesThatCanThrowOnInstanciation = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+			new(typeof(CultureInfo),    "\"fr-FR\""),
+			new(typeof(RegionInfo),     "\"FR\""),
+			new(typeof(Version),        "\"2.5.3\""),
+			new(typeof(Uri),            "\"https://example.com/products?id=10\""),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> ConstrainedValueTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(NonZeroInt),               "-24"),
+		new(typeof(NonEmptyString),           "\"bar\""),
+		new(typeof(NonEmptyGuid),             "\"00000000-0000-0000-0000-000000000002\""),
+		new(typeof(NonDefaultDateTime),       "\"2026-03-02T18:17:16\""),
+		new(typeof(NonDefaultDateTimeOffset), "\"2025-03-02T09:08:07-01:00\""),
+		new(typeof(NonZeroDecimal),           "2.5"),
+		new(typeof(NonZeroDouble),            "2.5"),
+		new(typeof(NonZeroFloat),             "2.5"),
+		new(typeof(NonZeroByte),              "24"),
+		new(typeof(NonZeroLong),              "-24"),
+		new(typeof(NonZeroSByte),             "-24"),
+		new(typeof(NonZeroShort),             "-24"),
+		new(typeof(NonZeroUInt),              "24"),
+		new(typeof(NonZeroULong),             "24"),
+		new(typeof(NonZeroUShort),            "24"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> GenericTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(KeyValuePair<int,string>),                                   "{\"Key\":1,\"Value\":\"foo\"}"),
+		new(typeof(KeyValuePair<NonEmptyGuid,NonEmptyGuid>),                    "{\"Key\":\"00000000-0000-0000-0000-000000000002\",\"Value\":\"00000000-0000-0000-0000-000000000003\"}"),
+		new(typeof(KeyValuePair<int[],NonEmptyHashSet<string>>),                "{\"Key\":[0,1],\"Value\":[\"bar\"]}"),
+		new(typeof(KeyValuePair<NonEmptyGuid[],NonEmptyHashSet<NonEmptyGuid>>), "{\"Key\":[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"],\"Value\":[\"00000000-0000-0000-0000-000000000003\"]}"),
+		new(typeof(MyGenericType<int>),                                         "{\"Value\":1}"),
+	]);
+	public class MyGenericType<T>
+	{
+		public T Value { get; }
+		public MyGenericType(T value) => Value = value;
+	}
+
+	static readonly TestCasesAggregation<TestCase> EnumTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ConsoleColor),           "\"DarkGreen\""),
+		new(typeof(EnumArchetype.SomeEnum), "\"FirstExposed\""),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> NativeCollectionTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(                    int[]),  "[0,1]"),
+		new(typeof(               List<int>) ,  "[0,1]"),
+		new(typeof(            HashSet<int>) ,  "[-24]"),
+		new(typeof(        IEnumerable<int>) ,  "[0,1]"),
+		new(typeof(              IList<int>) ,  "[0,1]"),
+		new(typeof(            NonEmptyGuid[]), "[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]"),
+		new(typeof(       List<NonEmptyGuid>),  "[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]"),
+		new(typeof(    HashSet<NonEmptyGuid>),  "[\"00000000-0000-0000-0000-000000000003\"]"),
+		new(typeof(IEnumerable<NonEmptyGuid>),  "[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]"),
+		new(typeof(      IList<NonEmptyGuid>),  "[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]"),
+		new(typeof(                    Guid[]), "[\"00000000-0000-0000-0000-000000000000\",\"00000000-0000-0000-0000-000000000001\"]"),
+		new(typeof(                  string[]), "[\"\",\"foo\"]"),
+		new(typeof(                DateTime[]), "[\"0001-01-01T00:00:00\",\"2000-02-01T21:20:19\"]"),
+		new(typeof(          DateTimeOffset[]), "[\"0001-01-01T00:00:00+00:00\",\"2010-02-01T06:05:04+01:00\"]"),
+		new(typeof(                 decimal[]), "[0,1]"),
+		new(typeof(                  double[]), "[0,1]"),
+		new(typeof(                   float[]), "[0,1]"),
+		new(typeof(                    byte[]), "\"AAE=\""),
+		new(typeof(                    long[]), "[0,1]"),
+		new(typeof(                   sbyte[]), "[0,1]"),
+		new(typeof(                   short[]), "[0,1]"),
+		new(typeof(                    uint[]), "[0,1]"),
+		new(typeof(                   ulong[]), "[0,1]"),
+		new(typeof(                  ushort[]), "[0,1]"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> ConstrainedCollectionTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+			new(typeof(NonEmptyHashSet<int>),          "[-24]"),
+			new(typeof(NonEmptyHashSet<NonEmptyGuid>), "[\"00000000-0000-0000-0000-000000000003\"]"),
+			new(typeof(NonEmptyArray<int>),            "[0,1]"),
+			new(typeof(NonEmptyLinkedList<int>),       "[0,1]"),
+			new(typeof(NonEmptyList<int>),             "[0,1]"),
+			new(typeof(NonEmptyQueue<int>),            "[0,1]"),
+			new(typeof(NonEmptySortedSet<int>),        "[-24]"),
+			new(typeof(NonEmptyStack<int>),            "[0,1]"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> CollectionOfCollectionsTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+			new(typeof(                                                                  int[][]),     "[[0,0],[0,1]]"),
+			new(typeof(                                             List<                int[]>),      "[[0,0],[0,1]]"),
+			new(typeof(                                             NonEmptyHashSet<List<int>>),       "[[-24]]"),
+			new(typeof(                                 IEnumerable<NonEmptyHashSet<List<int>>>),      "[[[0,0],[0,1]],[[-24]]]"),
+			new(typeof(                                 IEnumerable<NonEmptyHashSet<List<int>>>[]),    "[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[-24]]]]"),
+			new(typeof(                            List<IEnumerable<NonEmptyHashSet<List<int>>>[]>),   "[[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[0,0],[0,1]]]],[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[-24]]]]]"),
+			new(typeof(            NonEmptyHashSet<List<IEnumerable<NonEmptyHashSet<List<int>>>[]>>),  "[[[[[[0,0],[0,1],[-24]]]]]]"),
+			new(typeof(IEnumerable<NonEmptyHashSet<List<IEnumerable<NonEmptyHashSet<List<int>>>[]>>>), "[[[[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[0,0],[0,1]]]],[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[0,0],[0,1]]]]],[[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[0,0],[0,1]]]],[[[[0,0],[0,1]],[[0,0],[0,1]]],[[[0,0],[0,1]],[[-24]]]]]],[[[[[[0,0],[0,1],[-24]]]]]]]"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> NativeKeyValuePairsTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(Dictionary<int, int>),                   "{\"0\":0,\"1\":1}"),
+		new(typeof(Dictionary<NonEmptyGuid, NonEmptyGuid>), "{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> ConstrainedKeyValuePairsTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(NonEmptyDictionary<int, int>),                   "{\"0\":0,\"1\":1}"),
+		new(typeof(NonEmptyDictionary<NonEmptyGuid, NonEmptyGuid>), "{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}"),
+		new(typeof(NonEmptySortedDictionary<int, int>),             "{\"0\":0,\"1\":1}"),
+		new(typeof(NonEmptySortedList<int, int>),                   "{\"0\":0,\"1\":1}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> CollectionOfKeyValuePairsTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(              Dictionary<int, int>[]),   "[{\"0\":0,\"1\":0},{\"0\":0,\"1\":1}]"),
+		new(typeof(         List<Dictionary<int, int>>),    "[{\"0\":0,\"1\":0},{\"0\":0,\"1\":1}]"),
+		new(typeof(  IEnumerable<Dictionary<int, int>>),    "[{\"0\":0,\"1\":0},{\"0\":0,\"1\":1}]"),
+		new(typeof(NonEmptyHashSet<Dictionary<int, int>>),  "[{\"0\":-24}]"),
+		new(typeof(              Dictionary<int, int>[][]), "[[{\"0\":0,\"1\":0},{\"0\":0,\"1\":0}],[{\"0\":0,\"1\":0},{\"0\":0,\"1\":1}]]"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> KeyValuePairsOfCollectionTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(        Dictionary<int[],                int[]>),                "{\"[0,0]\":[0,0],\"[0,1]\":[0,1]}"),
+		new(typeof(        Dictionary<NonEmptyGuid[],       NonEmptyGuid[]>),       "{\"[\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000001\\\"]\":[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],\"[\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\"]\":[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]}"),
+		new(typeof(NonEmptyDictionary<int[],                int[]>),                "{\"[0,0]\":[0,0],\"[0,1]\":[0,1]}"),
+		new(typeof(NonEmptyDictionary<NonEmptyGuid[],       NonEmptyGuid[]>),       "{\"[\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000001\\\"]\":[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],\"[\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\"]\":[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]}"),
+		new(typeof(        Dictionary<List<int>,            List<int>>),            "{\"[0,0]\":[0,0],\"[0,1]\":[0,1]}"),
+		new(typeof(        Dictionary<IEnumerable<int>,     IEnumerable<int>>),     "{\"[0,0]\":[0,0],\"[0,1]\":[0,1]}"),
+		new(typeof(        Dictionary<NonEmptyHashSet<int>, NonEmptyHashSet<int>>), "{\"[0,1]\":[0,1],\"[-24]\":[-24]}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> KeyValuePairsOfKeyValuePairTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(        Dictionary<Dictionary<int,int>,                           Dictionary<int,int>>),                           "{\"{\\\"0\\\":0,\\\"1\\\":0}\":{\"0\":0,\"1\":0},\"{\\\"0\\\":0,\\\"1\\\":1}\":{\"0\":0,\"1\":1}}"),
+		new(typeof(        Dictionary<Dictionary<NonEmptyGuid,NonEmptyGuid>,         Dictionary<NonEmptyGuid,NonEmptyGuid>>),         "{\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000001\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000001\"},\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000002\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}}"),
+		new(typeof(        Dictionary<NonEmptyDictionary<int,int>,                   NonEmptyDictionary<int,int>>),                   "{\"{\\\"0\\\":0,\\\"1\\\":0}\":{\"0\":0,\"1\":0},\"{\\\"0\\\":0,\\\"1\\\":1}\":{\"0\":0,\"1\":1}}"),
+		new(typeof(        Dictionary<NonEmptyDictionary<NonEmptyGuid,NonEmptyGuid>, NonEmptyDictionary<NonEmptyGuid,NonEmptyGuid>>), "{\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000001\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000001\"},\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000002\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}}"),
+		new(typeof(NonEmptyDictionary<Dictionary<int,int>,                           Dictionary<int,int>>),                           "{\"{\\\"0\\\":0,\\\"1\\\":0}\":{\"0\":0,\"1\":0},\"{\\\"0\\\":0,\\\"1\\\":1}\":{\"0\":0,\"1\":1}}"),
+		new(typeof(NonEmptyDictionary<Dictionary<NonEmptyGuid,NonEmptyGuid>,         Dictionary<NonEmptyGuid,NonEmptyGuid>>),         "{\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000001\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000001\"},\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000002\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}}"),
+		new(typeof(NonEmptyDictionary<NonEmptyDictionary<int,int>,                   NonEmptyDictionary<int,int>>),                   "{\"{\\\"0\\\":0,\\\"1\\\":0}\":{\"0\":0,\"1\":0},\"{\\\"0\\\":0,\\\"1\\\":1}\":{\"0\":0,\"1\":1}}"),
+		new(typeof(NonEmptyDictionary<NonEmptyDictionary<NonEmptyGuid,NonEmptyGuid>, NonEmptyDictionary<NonEmptyGuid,NonEmptyGuid>>), "{\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000001\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000001\"},\"{\\\"00000000-0000-0000-0000-000000000001\\\":\\\"00000000-0000-0000-0000-000000000001\\\",\\\"00000000-0000-0000-0000-000000000002\\\":\\\"00000000-0000-0000-0000-000000000002\\\"}\":{\"00000000-0000-0000-0000-000000000001\":\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\":\"00000000-0000-0000-0000-000000000002\"}}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> NonGenericConstrainedCollectionTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfValuesType),                                          "[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfArraysType),                                         "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfArraysConstructedFromListType),                      "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfArraysConstructedFromIEnumerableType),               "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfListsType),                                          "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfListsConstructedFromListType),                       "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfListsConstructedFromIEnumerableType),                "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfIReadOnlyCollectionsType),                           "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfIReadOnlyCollectionsConstructedFromListType),        "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfIReadOnlyCollectionsConstructedFromIEnumerableType), "[[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000001\"],[\"00000000-0000-0000-0000-000000000001\",\"00000000-0000-0000-0000-000000000002\"]]"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> NonGenericConstrainedCollectionOfKeyValuePairsTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.NonGenericConstrainedCollectionOfKeyValuePairsType), "{\"1\":\"foo\",\"-24\":\"bar\"}")
+	]);
+
+
+	static readonly TestCasesAggregation<TestCase> DeserializationFriendlyPublicInstantiationOperationsExposingTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.PositionalRecordTypeContainingValuePropertyType),                 "{\"IntProperty\":1,\"StringProperty\":\"foo\"}"),
+		new(typeof(ClassArchetype.PositionalRecordTypeContainingConstrainedValuePropertyTypes),     "{\"IntProperty\":1,\"NonEmptyGuidProperty\":\"00000000-0000-0000-0000-000000000002\"}"),
+		new(typeof(ClassArchetype.PositionalRecordTypeContainingParentObjectPropertyTypes),         "{\"RecordWithAnIntAndANonEmptyGuidProperty\":{\"IntProperty\":1,\"NonEmptyGuidProperty\":\"00000000-0000-0000-0000-000000000002\"}}"),
+		new(typeof(ClassArchetype.PublicParameterlessConstructorExposingType_Aka_GetSetStyleClass), "{\"String\":\"foo\",\"Int\":1,\"NonEmptyGuid\":\"00000000-0000-0000-0000-000000000002\"}"),
+	]);
+	static readonly TestCasesAggregation<TestCase> DeserializationAdversePublicInstantiationOperationsExposingTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.MultiplePublicConstructorsHavingParametersExposingType),          "{\"BuiltFrom\":\"two-parameters constructor called with values (1,-24)\"}"),
+		new(typeof(ClassArchetype.SinglePublicStaticFactoryMethodExposingType),                     "{\"Value\":1}"),
+		new(typeof(ClassArchetype.MultiplePublicStaticFactoryMethodsExposingType),                  "{\"BuiltFrom\":\"two-parameters static factory method called with values (1,-24)\"}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> SingletonAccessExposingTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.PublicSingletonPropertyExposingType), "{}"),
+		new(typeof(ClassArchetype.PublicSingletonFieldExposingType),    "{}"),
+	]);
+
+	static readonly TestCasesAggregation<TestCase> InstancesAccessExposingTypes = TestCasesAggregation<TestCase>.CreateFromTestCases(
+	[
+		new(typeof(ClassArchetype.PublicInstancesPropertyExposingType),      "{\"Name\":\"SecondExposed\",\"Value\":2}"),
+		new(typeof(ClassArchetype.PublicInstancesReadonlyFieldExposingType), "{\"Name\":\"SecondExposed\",\"Value\":2}"),
+		new(typeof(ClassArchetype.PublicInstancesFieldExposingType),         "{\"Name\":\"SecondExposed\",\"Value\":2}"),
+	]);
+}

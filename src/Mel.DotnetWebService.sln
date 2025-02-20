@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mel.DotnetWebService.Api", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mel.DotnetWebService.Tests.FearlessProgramming", "Mel.DotnetWebService.Tests.FearlessProgramming\Mel.DotnetWebService.Tests.FearlessProgramming.csproj", "{C5A33519-1AE0-4B6F-A554-B14B99410666}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mel.DotnetWebService.CrossCuttingConcerns", "Mel.DotnetWebService.CrossCuttingConcerns\Mel.DotnetWebService.CrossCuttingConcerns.csproj", "{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{C5A33519-1AE0-4B6F-A554-B14B99410666}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5A33519-1AE0-4B6F-A554-B14B99410666}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5A33519-1AE0-4B6F-A554-B14B99410666}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

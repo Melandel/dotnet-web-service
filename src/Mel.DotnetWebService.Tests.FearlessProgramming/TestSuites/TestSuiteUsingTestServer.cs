@@ -1,4 +1,4 @@
-﻿using NUnit.Framework.Interfaces;
+using NUnit.Framework.Interfaces;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites;
 

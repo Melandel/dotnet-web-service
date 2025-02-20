@@ -1,0 +1,48 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using Mel.DotnetWebService.CrossCuttingConcerns.DataExamples;
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
+
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestData.AutoValueProviders.Randomization.Generator;
+
+class NativeValueExampleInstanciationBuilder : RandomizedExampleInstanciationBuilder
+{
+	public static readonly NativeValueExampleInstanciationBuilder Instance = new();
+	static readonly Dictionary<Type, FieldInfo> ValidExampleValuesFieldByNativeType = new()
+	{
+		{ typeof(bool),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForBoolType))           },
+		{ typeof(byte),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForByteType))           },
+		{ typeof(DateTime),       typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForDateTimeType))       },
+		{ typeof(DateTimeOffset), typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForDateTimeOffsetType)) },
+		{ typeof(decimal),        typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForDecimalType))        },
+		{ typeof(double),         typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForDoubleType))         },
+		{ typeof(float),          typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForFloatType))          },
+		{ typeof(Guid),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForGuidType))           },
+		{ typeof(int),            typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForIntType))            },
+		{ typeof(long),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForLongType))           },
+		{ typeof(nint),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForNIntType))           },
+		{ typeof(nuint),          typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForNUIntType))          },
+		{ typeof(sbyte),          typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForSByteType))          },
+		{ typeof(short),          typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForShortType))          },
+		{ typeof(string),         typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForStringType))         },
+		{ typeof(uint),           typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForUIntType))           },
+		{ typeof(ulong),          typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForULongType))          },
+		{ typeof(ushort),         typeof(ValidExampleValues).GetField(nameof(ValidExampleValues.ForUShortType))         },
+	};
+
+	public override Expression BuildInstanciationExpressionFor(Type type, Expression currentSalt, Expression generativeSalts)
+	{
+		var examples = Expression.Field(null, ValidExampleValuesFieldByNativeType[type]);
+		var conversionToArrayType = ConstrainedTypeInfos.Get(typeof(ArrayOfUniqueValuesWithAtLeast2Items<>).MakeGenericType(type)).ConvertorToNativeRootTypeExpression;
+
+		var examplesAsArray = Expression.Variable(type.MakeArrayType(), "examplesAsArray");
+		var index           = Expression.Variable(typeof(int),          "index");
+		return Expression.Block(
+			[examplesAsArray, index],
+			Expression.Assign(examplesAsArray, Expression.Invoke(conversionToArrayType, examples)),
+			Expression.Assign(index,           Expression.Modulo(currentSalt, Expression.ArrayLength(examplesAsArray))),
+
+			GenerativeSalts.Enqueue(generativeSalts, index),
+			Expression.ArrayIndex(examplesAsArray, index));
+	}
+}
