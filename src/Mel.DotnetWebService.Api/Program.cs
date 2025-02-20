@@ -1,4 +1,7 @@
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddConstrainedTypes();
 builder.Services.AddCustomControllersAndCustomApiVersioning();
 builder.Services.AddCustomSwaggerGeneration();
 builder.Services.AddCustomSwaggerUI();
