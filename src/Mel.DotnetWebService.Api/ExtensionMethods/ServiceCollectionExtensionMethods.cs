@@ -1,4 +1,5 @@
 ﻿using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
+using Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.StringRepresentation;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
@@ -21,10 +22,16 @@ static class ServiceCollectionExtensionMethods
 
 	public static IServiceCollection AddCustomControllers(this IServiceCollection services)
 	{
-		services.AddControllers(mvcOptions =>
-		{
-			mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
-		});
+		services
+			.AddControllers(mvcOptions =>
+			{
+				mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
+				mvcOptions.ModelBinderProviders.Insert(0, new NonEmptyGuidBinderProvider());
+			})
+			.AddJsonOptions(jsonOptions =>
+			{
+				jsonOptions.JsonSerializerOptions.Converters.Add(new ConstrainedTypeJsonConverter());
+			});
 		services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ReportApiVersions = true);
 		return services;
 	}
