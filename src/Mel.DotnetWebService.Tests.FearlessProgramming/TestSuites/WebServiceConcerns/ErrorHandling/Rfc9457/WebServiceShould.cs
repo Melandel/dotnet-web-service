@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction.HttpProblemTypeExtensionMember;
+using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction.HttpProblemTypeExtensionMember;
 using static Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles.ControllerTestDoubles;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.ErrorHandling.Rfc9457;
@@ -109,6 +109,19 @@ class WebServiceShould : TestSuiteUsingTestServer
 				Assert.That(problemDetails.Extensions, Does.ContainKey("errors"));
 				Assert.That(problemDetails.Extensions, Does.ContainKey("traceId"));
 			});
+		}
+
+		[Test]
+		public void On_ConstrainedType_Failed_Deserialization()
+		{
+			// Arrange
+			var controllerMethod = nameof(StubbedEndpointsSpecificallyCreatedForTests.NonEmptyGuidPassThrough);
+
+			// Act & Assert
+			Assert.That(async() =>
+			{
+				var httpResponse = await TestServer.HttpClient.GetAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod, "?nonEmptyGuid=00000000-0000-0000-0000-000000000000\"");
+			}, Throws.Exception);
 		}
 	}
 

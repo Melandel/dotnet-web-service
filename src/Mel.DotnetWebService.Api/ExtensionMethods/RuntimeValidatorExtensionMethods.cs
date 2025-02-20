@@ -1,0 +1,7 @@
+namespace Mel.DotnetWebService.Api.ExtensionMethods;
+
+static class RuntimeValidatorExtensionMethods
+{
+	public static void EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(this Concerns.RuntimeValidation.RuntimeValidator runtimeValidator)
+	=> Concerns.DataValidity.Integration.ConstrainedTypes.Serialization.EnsureThatConstrainedTypesInvolvedInControllerActionSignaturesCanBeDeserialized(runtimeValidator);
+}
