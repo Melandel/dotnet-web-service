@@ -16,10 +16,11 @@ class WebApiRoutes
 	{
 		get
 		{
-			yield return new object[] { StringArchetype.Foo };
-			yield return new object[] { $"{StringArchetype.Bar}/" };
-			yield return new object[] { $"{StringArchetype.Foobar}/{StringArchetype.Baz}" };
-			yield return new object[] { $"{StringArchetype.Qux}/{StringArchetype.Quux}/index.html" };
+			var i = 0;
+			yield return new object[] { string.Format("{0}",                Some.Valid<NonEmptyString>(i))   };
+			yield return new object[] { string.Format("{0}/",               Some.Valid<NonEmptyString>(i++)) };
+			yield return new object[] { string.Format("{0}/{1}",            Some.Valid<NonEmptyString>(i++), Some.Valid<NonEmptyString>(i++)) };
+			yield return new object[] { string.Format("{0}/{1}/index.html", Some.Valid<NonEmptyString>(i++), Some.Valid<NonEmptyString>(i++)) };
 		}
 	}
 }

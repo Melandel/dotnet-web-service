@@ -1,0 +1,7 @@
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDoubleGeneration.ExceptionThrowingStubGeneration;
+
+class DynamicExceptionThrowingStubTypeGenerator
+{
+	public static Type GenerateConcreteTypeImplementing(Type interfaceType)
+	=> ExceptionThrowingStubGeneratorUsingReflectionEmit.GenerateConcreteTypeImplementing(interfaceType);
+}

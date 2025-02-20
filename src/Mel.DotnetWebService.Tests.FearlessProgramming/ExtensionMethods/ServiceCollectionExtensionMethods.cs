@@ -15,7 +15,8 @@ static class ServiceCollectionExtensionMethods
 			.Last(descriptor => descriptor.ServiceType == typeof(Microsoft.AspNetCore.Mvc.ApplicationParts.ApplicationPartManager))
 			.ImplementationInstance;
 
-		partManager.FeatureProviders.Add(new ApplicationFeatureProviderThatAddsController<TController>());
+		partManager.FeatureProviders.Add(
+			ApplicationFeatureProviderTestDouble<TController>.Stub with { Behavior = "add controller" });
 
 		return services;
 	}

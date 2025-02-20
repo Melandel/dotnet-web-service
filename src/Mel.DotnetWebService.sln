@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -8,6 +8,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mel.DotnetWebService.Tests.FearlessProgramming", "Mel.DotnetWebService.Tests.FearlessProgramming\Mel.DotnetWebService.Tests.FearlessProgramming.csproj", "{C5A33519-1AE0-4B6F-A554-B14B99410666}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mel.DotnetWebService.CodingStandards", "Mel.DotnetWebService.CodingStandards\Mel.DotnetWebService.CodingStandards.csproj", "{95872FB2-7918-4F5C-BDA7-A0AFC50AFD70}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mel.DotnetWebService.CrossCuttingConcerns", "Mel.DotnetWebService.CrossCuttingConcerns\Mel.DotnetWebService.CrossCuttingConcerns.csproj", "{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{95872FB2-7918-4F5C-BDA7-A0AFC50AFD70}.Release|x64.Build.0 = Release|Any CPU
 		{95872FB2-7918-4F5C-BDA7-A0AFC50AFD70}.Release|x86.ActiveCfg = Release|Any CPU
 		{95872FB2-7918-4F5C-BDA7-A0AFC50AFD70}.Release|x86.Build.0 = Release|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74015F3D-ED85-42EB-9FC7-5FB2BC2C7437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

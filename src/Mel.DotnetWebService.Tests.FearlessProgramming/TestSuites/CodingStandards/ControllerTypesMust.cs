@@ -2,11 +2,13 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.CodingStanda
 
 class ControllerTypesMust : TestSuiteUsingTestServer
 {
-	[TestCaseSource(typeof(Types), nameof(Types.AllControllerTypesDefinedByOurOrganization))]
-	public void Inherit_From_AbstractClass_ApiController(Type controllerType)
-	{
-		Assert.That(
-			controllerType.IsEqualOrSubclassOf(typeof(Api.Controllers.ApiController)),
-			Is.True);
-	}
+	[Test]
+	public void Inherit_From_AbstractClass_ApiController()
+	=> Types.AllControllerTypesDefinedByOurOrganization
+		.ParallelForEach(controllerType =>
+		{
+			Assert.That(
+				controllerType.IsEqualOrSubclassOf(typeof(Api.Controllers.ApiController)),
+				Is.True);
+		});
 }

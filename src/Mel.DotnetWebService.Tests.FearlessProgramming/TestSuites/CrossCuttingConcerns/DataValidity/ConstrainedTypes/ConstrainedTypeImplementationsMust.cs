@@ -1,0 +1,30 @@
+namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.CrossCuttingConcerns.DataValidity.ConstrainedTypes;
+
+class ConstrainedTypeImplementationsMust
+{
+	[Test]
+	public void Simultaneously_InheritConstrainedBaseClass_And_ImplementIConstrainedInterface()
+	=> Types.AllConcreteConstrainedTypes
+		.ParallelForEach(constrainedType =>
+		{
+			if (constrainedType.ImplementsInterface(typeof(IConstrainedCollection<,>)))
+			{
+				Assert.That(constrainedType.IsOrExtends(typeof(ConstrainedCollection<>)));
+				return;
+			}
+
+			if (constrainedType.ImplementsInterface(typeof(IConstrainedCollectionOfKeyValuePairs<,,>)))
+			{
+				Assert.That(constrainedType.IsOrExtends(typeof(ConstrainedCollectionOfKeyValuePairs<>)));
+				return;
+			}
+
+			if (constrainedType.ImplementsInterface(typeof(IConstrainedValue<,>)))
+			{
+				Assert.That(constrainedType.IsOrExtends(typeof(ConstrainedValue<>)));
+				return;
+			}
+
+			Assert.Fail($"{constrainedType} is not a valid constrained type");
+		});
+}
