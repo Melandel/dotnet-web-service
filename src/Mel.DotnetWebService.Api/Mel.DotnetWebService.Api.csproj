@@ -23,4 +23,8 @@
     <_Parameter1>Mel.DotnetWebService.Tests.FearlessProgramming</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mel.DotnetWebService.CrossCuttingConcerns\Mel.DotnetWebService.CrossCuttingConcerns.csproj" />
+  </ItemGroup>
 </Project>
