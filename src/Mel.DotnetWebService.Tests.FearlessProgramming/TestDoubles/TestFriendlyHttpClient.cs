@@ -32,7 +32,7 @@ internal class TestFriendlyHttpClient
 	public async Task<HttpResponseMessage> PostAsync<TController>(string controllerMethodName, string uriSuffix, HttpContent content) => await PostAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}", content);
 	public async Task<HttpResponseMessage> PutAsync<TController>(string controllerMethodName, HttpContent content) => await PutAsync(BuildRequestUri<TController>(controllerMethodName), content);
 	public async Task<HttpResponseMessage> PutAsync<TController>(string controllerMethodName, string uriSuffix, HttpContent content) => await PutAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}", content);
-	static string BuildRequestUri<TController>(string controllerMethodName)
+	public static string BuildRequestUri<TController>(string controllerMethodName)
 	{
 		var routeName = KebabCaseParameterTransformer.RemoveAnyHttpVerbPrefix(controllerMethodName);
 

@@ -1,10 +1,22 @@
 global using System.Net;
 global using NUnit.Framework;
+global using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes;
+global using Mel.DotnetWebService.CrossCuttingConcerns.ErrorHandling;
+global using Mel.DotnetWebService.CrossCuttingConcerns.ExtensionMethods;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.ExtensionMethods;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.Serialization;
+global using Is  = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Is;
+global using Has = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Has;
+global using Throws = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Throws;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes;
+global using Some       = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration.Some;
+global using Another    = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration.Another;
+global using YetAnother = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration.YetAnother;
+global using Randomized = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration.Randomized;
+global using Regenerate = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.TestDataGeneration.Regenerate;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestDoubles;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.DeploymentEnvironmentsAwareness;
-
+global using TestAttribute = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Attributes.TestAttribute;
+global using RetryAttribute = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Attributes.RetryAttribute;
