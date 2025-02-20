@@ -18,6 +18,25 @@ static class ControllerTestDoubles
 			_logger = logger;
 			}
 
+		[MapToApiVersion("3")]
+		[HttpGet]
+		public JsonResult GetHttpProblemTypeFromAnotherController() => new JsonResult(HttpProblemTypeProvider.GetDeveloperMistake());
+
+		[HttpGet]
+		public IActionResult CallSomeService([FromServices] ISomeService someService)
+		{
+			var input = new ISomeService.Input();
+			var output = someService.Process(input);
+			return Ok(output);
+		}
+
+		[HttpGet]
+		public int DivisionByZero()
+		{
+			int zero = 0;
+			return 1/zero;
+		}
+
 		[HttpGet]
 		public string DefinedInAllApiVersions() => "Hello, word!";
 
@@ -33,5 +52,13 @@ static class ControllerTestDoubles
 		[MapToApiVersion("1")]
 		[HttpGet]
 		public string DefinedOnlyInApiV1() => "hello world";
+
+		public record RequestContainingGuidProperty(Guid Guid);
+
+		[HttpPost]
+		public Guid GuidPassThrough(RequestContainingGuidProperty request) => request.Guid;
+
+		[HttpGet]
+		public Guid GuidPassThrough(Guid guid) => guid;
 	}
 }

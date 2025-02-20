@@ -1,28 +1,53 @@
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction;
+using Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.ErrorHandling.Rfc9457;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestServers;
 
-internal class InMemoryTestServer : WebApplicationFactory<Program>
+class InMemoryTestServer : WebApplicationFactory<Program>
 {
 	readonly Dictionary<string, List<HttpResponseMessage>> _httpResponseMessagesByTestId;
+	readonly DeploymentEnvironment _deploymentEnvironment;
+	readonly Lazy<HttpProblemTypeArchetype.Deserializable[]> _httpProblemTypes;
 	public TestFriendlyHttpClient HttpClient => CreateHttpClient();
-	InMemoryTestServer()
+	InMemoryTestServer(DeploymentEnvironment deploymentEnvironment)
 	{
 		_httpResponseMessagesByTestId = new Dictionary<string, List<HttpResponseMessage>>();
+		_deploymentEnvironment = deploymentEnvironment;
+		_httpProblemTypes = new Lazy<HttpProblemTypeArchetype.Deserializable[]>(() =>
+		{
+			var httpProblemTypesAsHttpResponse = HttpClient.GetAsync("api/v1/http-problem-types")
+				.GetAwaiter()
+				.GetResult();
+			var httpProblemTypes = httpProblemTypesAsHttpResponse.ToResponseObject<HttpProblemTypeArchetype.Deserializable[]>()
+				.GetAwaiter()
+				.GetResult();
+			return httpProblemTypes;
+		});
 	}
-
 	protected override IHost CreateHost(IHostBuilder builder)
 	{
 		builder
+			.UseEnvironment(_deploymentEnvironment.ToString())
 			.ConfigureLogging(logging => logging.ClearProviders())
-			.ConfigureServices(services => services.AddController<ControllerTestDoubles.StubbedEndpointsSpecificallyCreatedForTests>());
+			.ConfigureServices(services =>
+			{
+				services
+					.AddController<ControllerTestDoubles.StubbedEndpointsSpecificallyCreatedForTests>();
+
+				services
+					.AssertThatServiceIsNotInjected(
+						WebServiceShould.Implementent_Rfc9457.TypeOfServiceThatShouldNotBeInjected,
+						WebServiceShould.Implementent_Rfc9457.TestThatSpecificallyRequiresServiceNotInjected);
+			});
+
 		return base.CreateHost(builder);
 	}
 
-	public static InMemoryTestServer Create()
-	=> new InMemoryTestServer();
+	public static InMemoryTestServer Create(DeploymentEnvironment deploymentEnvironment = DeploymentEnvironment.Production)
+	=> new InMemoryTestServer(deploymentEnvironment);
 
 	public TestFriendlyHttpClient CreateHttpClient()
 	{
@@ -46,4 +71,13 @@ internal class InMemoryTestServer : WebApplicationFactory<Program>
 			}
 		}
 	}
+
+	public IReadOnlyCollection<string> HttpProblemTypeRoutes
+	=> _httpProblemTypes.Value
+		.Select(httpProblemType => httpProblemType.Uri.ToString())
+		.ToArray();
+
+	public HttpProblemType GetHttpProblemTypeByName(string httpProblemTypeName)
+	=> _httpProblemTypes.Value
+		.Single(httpProblemType => httpProblemType.Uri.ToString().EndsWith(httpProblemTypeName));
 }

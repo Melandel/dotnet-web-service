@@ -2,8 +2,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCustomControllersAndCustomApiVersioning();
 builder.Services.AddCustomSwaggerGeneration();
 builder.Services.AddCustomSwaggerUI();
+builder.Services.AddCustomExceptionHandlingCompliantWithRfc9457();
 
 var app = builder.Build();
+
+app.UseCustomExceptionHandlingCompliantWithRfc9457();
 
 app.UseSwagger();
 
