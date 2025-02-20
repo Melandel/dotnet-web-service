@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\**" />
+    <Compile Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\**" />
+    <Compile Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\**" />
+    <EmbeddedResource Remove="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\**" />
+    <EmbeddedResource Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\**" />
+    <EmbeddedResource Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\**" />
+    <None Remove="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\**" />
+    <None Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\**" />
+    <None Remove="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\ConstrainedDictionary.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\NonEmptyDictionary.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\Dictionaries\NonEmptyDictionary`.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\ConstrainedSortedDictionary.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\NonEmptySortedDictionary.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedDictionaries\NonEmptySortedDictionary`.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\ConstrainedSortedList.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\NonEmptySortedList.cs" />
+    <Compile Include="DataValidity\ConstrainedTypes\KeyValuePairs\SortedLists\NonEmptySortedList`.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+  	<InternalsVisibleTo Include="Mel.DotnetWebService.Tests.FearlessProgramming" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

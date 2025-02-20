@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction.HttpProblemTypeExtensionMember;
+using static Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction.HttpProblemTypeExtensionMember;
 using static Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles.ControllerTestDoubles;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.ErrorHandling.Rfc9457;
@@ -17,24 +17,25 @@ class WebServiceShould : TestSuiteUsingTestServer
 		{
 			// Arrange
 			var controllerMethod = nameof(StubbedEndpointsSpecificallyCreatedForTests.CallSomeService);
-
-			// Act & Assert
-			Assert.That(async() =>
+			Func<Task> asyncFunc = async () =>
 			{
 				var httpResponse = await TestServer.HttpClient.GetAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod);
-			// 👇 An exception is expected in the current test instead of a ProblemDetails.
-			//    Justification: one can observe that if InMemoryTestServer throws at this point
-			//      then the non-test server would actually return a ProblemDetail looking like the following:
-			//      {
-			//        "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-			//        "title": "System.InvalidOperationException",
-			//        "status": 500,
-			//        "detail": "No service for type [...] has been registered.",
-			//         ...
-			//      }
-			}, Throws.Exception
-				.AssignableTo<InvalidOperationException>()
-				.With.Message.EqualTo("No service for type 'Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles.ISomeService' has been registered."));
+				// 👇 An exception is expected in the current test instead of a ProblemDetails.
+				//    Justification: one can observe that if InMemoryTestServer throws at this point
+				//      then the non-test server would actually return a ProblemDetail looking like the following:
+				//      {
+				//        "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+				//        "title": "System.InvalidOperationException",
+				//        "status": 500,
+				//        "detail": "No service for type [...] has been registered.",
+				//         ...
+				//      }
+			};
+			// Act & Assert
+			Assert.That(
+				asyncFunc,
+				Throws.Exception.AssignableTo<InvalidOperationException>()
+					.With.Message.EqualTo("No service for type 'Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles.ISomeService' has been registered."));
 		}
 
 		[Test]
@@ -47,19 +48,18 @@ class WebServiceShould : TestSuiteUsingTestServer
 			var httpResponse = await TestServer.HttpClient.GetAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod);
 
 			// Assert
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				ProblemDetails problemDetails = null;
-				Assert.That(
-					async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>(),
-					Throws.Nothing);
+				Func<Task> asyncFunc = async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>();
+				Assert.That(asyncFunc, Throws.Nothing);
 
 				var developerMistake = TestServer.GetHttpProblemTypeByName("developer-mistake");
 				Assert.That(problemDetails.Type, Is.EqualTo(developerMistake.Uri.ToString()));
 				Assert.That(problemDetails.Title, Is.EqualTo(developerMistake.Title));
 				Assert.That(problemDetails.Status, Is.EqualTo((int)developerMistake.RecommendedHttpStatusCode));
 				Assert.That(problemDetails.Detail, Is.Not.Null.And.Not.Empty);
-			});
+			};
 		}
 
 		[Test]
@@ -74,17 +74,16 @@ class WebServiceShould : TestSuiteUsingTestServer
 			var httpResponse = await TestServer.HttpClient.PostAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod, new StringContent(payload, Encoding.UTF8, "application/json"));
 
 			// Assert
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				ProblemDetails problemDetails = null;
-				Assert.That(
-					async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>(),
-					Throws.Nothing);
+				Func<Task> asyncFunc = async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>();
+				Assert.That(asyncFunc, Throws.Nothing);
 				Assert.That(problemDetails.Type, Is.EqualTo("https://tools.ietf.org/html/rfc9110#section-15.5.1"));
 				Assert.That(problemDetails.Status, Is.EqualTo((int)HttpStatusCode.BadRequest));
 				Assert.That(problemDetails.Extensions, Does.ContainKey("errors"));
 				Assert.That(problemDetails.Extensions, Does.ContainKey("traceId"));
-			});
+			};
 		}
 
 		[Test]
@@ -98,17 +97,30 @@ class WebServiceShould : TestSuiteUsingTestServer
 			var httpResponse = await TestServer.HttpClient.GetAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod, $"?guid={invalidGuid}");
 
 			// Assert
-			Assert.Multiple(() =>
+			using (Assert.EnterMultipleScope())
 			{
 				ProblemDetails problemDetails = null;
-				Assert.That(
-					async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>(),
-					Throws.Nothing);
+				Func<Task> asyncFunc = async () => problemDetails = await httpResponse.ToResponseObject<ProblemDetails>();
+				Assert.That(asyncFunc, Throws.Nothing);
 				Assert.That(problemDetails.Type, Is.EqualTo("https://tools.ietf.org/html/rfc9110#section-15.5.1"));
 				Assert.That(problemDetails.Status, Is.EqualTo((int)HttpStatusCode.BadRequest));
 				Assert.That(problemDetails.Extensions, Does.ContainKey("errors"));
 				Assert.That(problemDetails.Extensions, Does.ContainKey("traceId"));
-			});
+			};
+		}
+
+		[Test]
+		public void On_ConstrainedType_Failed_Deserialization()
+		{
+			// Arrange
+			var controllerMethod = nameof(StubbedEndpointsSpecificallyCreatedForTests.NonEmptyGuidPassThrough);
+			var action = async () =>
+			{
+				var httpResponse = await TestServer.HttpClient.GetAsync<StubbedEndpointsSpecificallyCreatedForTests>(controllerMethod, "?nonEmptyGuid=00000000-0000-0000-0000-000000000000\"");
+			};
+
+			// Act & Assert
+			Assert.That(action, Throws.Exception);
 		}
 	}
 
@@ -125,19 +137,18 @@ class WebServiceShould : TestSuiteUsingTestServer
 		var responseContent = await httpResponse.GetContentAsString();
 
 		// Assert
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			ProblemDetails problemDetails = null;
-			Assert.That(
-					() => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent),
-					Throws.Nothing);
+			Action action = () => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent);
+			Assert.DoesNotThrow(action);
 
 			Assert.That(problemDetails, Is.Not.Null);
 			Assert.That(responseContent, Does.Not.Contain(StackTrace.ToString()).And.Not.Contain(nameof(StubbedEndpointsSpecificallyCreatedForTests.DivisionByZero)));
 			Assert.That(responseContent, Does.Contain(ExceptionsTypes.ToString()).And.Contain(nameof(DivideByZeroException)));
 			Assert.That(responseContent, Does.Contain(ExceptionsAggregatedMessages.ToString()));
 			Assert.That(responseContent, Does.Contain(ExceptionsAggregatedData.ToString()));
-		});
+		};
 	}
 
 	[TestCaseSource(typeof(DeploymentEnvironments), nameof(DeploymentEnvironments.All_DeploymentEnvironments_Except_Production))]
@@ -153,18 +164,17 @@ class WebServiceShould : TestSuiteUsingTestServer
 		var responseContent = await httpResponse.GetContentAsString();
 
 		// Assert
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			ProblemDetails problemDetails = null;
-			Assert.That(
-					() => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent),
-					Throws.Nothing);
+			Action action = () => problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(responseContent);
+			Assert.DoesNotThrow(action);
 
 			Assert.That(problemDetails, Is.Not.Null);
 			Assert.That(responseContent, Does.Contain(StackTrace.ToString()).And.Contain(nameof(StubbedEndpointsSpecificallyCreatedForTests.DivisionByZero)));
 			Assert.That(responseContent, Does.Contain(ExceptionsTypes.ToString()).And.Contain(nameof(DivideByZeroException)));
 			Assert.That(responseContent, Does.Contain(ExceptionsAggregatedMessages.ToString()));
 			Assert.That(responseContent, Does.Contain(ExceptionsAggregatedData.ToString()));
-		});
+		};
 	}
 }
