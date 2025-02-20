@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Mel.DotnetWebService.Api.Controllers;
 
 [ApiController]
-[Concerns.ErrorHandling.AccessToReceivingControllerContext.StoreReceivingControllerContextInsideHttpContext]
+[Concerns.ErrorHandling.Rfc9457.AccessToReceivingControllerContext.StoreReceivingControllerContextInsideHttpContext]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 public abstract class ApiController : ControllerBase
 {
