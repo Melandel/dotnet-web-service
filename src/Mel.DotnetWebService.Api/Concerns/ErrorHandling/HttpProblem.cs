@@ -10,7 +10,7 @@ record HttpProblem
 		{
 			if (!occurrence.ProblemSpecificInformation.ContainsKey(extensionMemberName))
 			{
-				throw ObjectConstructionException.WhenConstructing<HttpProblem>(nameof(Type), type, $"the extension member {extensionMemberName} is missing while being required when a {type.GetType().Name}-type problem occurs.");
+				throw ObjectConstructionException.WhenConstructingAMemberFor<HttpProblem>(nameof(Type), type, $"the extension member {extensionMemberName} is missing while being required when a {type.GetType().Name}-type problem occurs.");
 			}
 		}
 		Type = type;
