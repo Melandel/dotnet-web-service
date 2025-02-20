@@ -38,5 +38,19 @@ static class ServiceCollectionExtensionMethods
 
 		return services;
 	}
+
+	public static IServiceCollection AddCustomExceptionHandlingCompliantWithRfc9457(this IServiceCollection services)
+	{
+		services.AddProblemDetails();
+		services.AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware();
+		return services;
+	}
+
+	public static IServiceCollection AddAccessToHttpProblemTypeProviderFromReceivingControllerAndErrorHandlingMiddleware(this IServiceCollection services)
+	{
+		services.AddScoped<Controllers.HttpProblemTypeProvider>();
+		services.AddHttpContextAccessor();
+		return services;
+	}
 }
 
