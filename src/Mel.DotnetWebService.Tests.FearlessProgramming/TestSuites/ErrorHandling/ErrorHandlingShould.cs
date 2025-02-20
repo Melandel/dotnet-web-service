@@ -109,6 +109,19 @@ class ErrorHandlingShould : TestSuiteUsingTestServer
 				Assert.That(problemDetails.Extensions, Does.ContainKey("traceId"));
 			});
 		}
+
+		[Test]
+		public void On_ConstrainedType_Failed_Deserialization()
+		{
+			// Arrange
+			var requestUri = $"api/v1/stubbed-endpoints-specifically-created-for-tests/non-empty-guid-pass-through?nonEmptyGuid=00000000-0000-0000-0000-000000000000";
+
+			// Act & Assert
+			Assert.That(async() =>
+			{
+				var httpResponse = await TestServer.HttpClient.GetAsync(requestUri);
+			}, Throws.Exception);
+		}
 	}
 
 	[Test]
