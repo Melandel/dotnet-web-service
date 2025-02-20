@@ -14,7 +14,7 @@ public static class DelegatingHandlerTestDouble
 		{
 			var httpResponseMessage = await base.SendAsync(request, cancellationToken);
 
-			TestContext.WriteLine(await BuildMessageInTestOutput(httpResponseMessage));
+			NUnit.Framework.TestContext.WriteLine(await BuildMessageInTestOutput(httpResponseMessage));
 			return httpResponseMessage;
 		}
 
