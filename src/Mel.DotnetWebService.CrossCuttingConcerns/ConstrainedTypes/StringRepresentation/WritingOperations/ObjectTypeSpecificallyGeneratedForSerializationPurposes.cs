@@ -1,0 +1,4 @@
+﻿namespace Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.StringRepresentation.WritingOperations;
+
+
+record ObjectTypeSpecificallyGeneratedForSerializationPurposes(object? Value);

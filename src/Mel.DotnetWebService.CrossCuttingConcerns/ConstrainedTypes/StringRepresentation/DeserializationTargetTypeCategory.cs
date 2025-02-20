@@ -1,0 +1,14 @@
+﻿namespace Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.StringRepresentation;
+
+enum DeserializationTargetTypeCategory
+{
+	TechnicalDefaultEnumValue = 0,
+	ConstrainedType,
+	DataStructureThatContainsAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems,
+	Collection,
+	//CollectionOfItemsWhoseTypeContainsAConstrainedTypeEitherDirectlyOrInItsSubStructuresIncludingCollectionAndDictionaryItems,
+	//Dictionary,
+	//ConstrainedCollectionType,
+	//KeyValuePair,
+	ThatDoesNotInvolveAnyConstrainedType
+}
