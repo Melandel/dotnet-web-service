@@ -1,5 +1,3 @@
-using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes;
-
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.ExtensionMethods;
 
 public static class TypeExtensionMethods
