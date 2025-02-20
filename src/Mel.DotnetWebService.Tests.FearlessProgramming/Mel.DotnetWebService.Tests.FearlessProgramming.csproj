@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mel.DotnetWebService.Api\Mel.DotnetWebService.Api.csproj" />
+    <ProjectReference Include="..\Mel.DotnetWebService.CrossCuttingConcerns\Mel.DotnetWebService.CrossCuttingConcerns.csproj" />
   </ItemGroup>
 
 </Project>
