@@ -1,8 +1,10 @@
 ﻿using Mel.DotnetWebService.Api.Concerns.ErrorHandling;
 using Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.ErrorHandling;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestServers;
 
@@ -12,6 +14,7 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	readonly DeploymentEnvironment _deploymentEnvironment;
 	readonly Lazy<HttpProblemTypeArchetype.Deserializable[]> _httpProblemTypes;
 	public TestFriendlyHttpClient HttpClient => CreateHttpClient();
+	public Microsoft.OpenApi.Models.OpenApiDocument OpenApiDocument { get; private set; }
 	InMemoryTestServer(DeploymentEnvironment deploymentEnvironment)
 	{
 		_httpResponseMessagesByTestId = new Dictionary<string, List<HttpResponseMessage>>();
@@ -43,7 +46,11 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 						ErrorHandlingShould.Implementent_Rfc9457.TestThatSpecificallyRequiresServiceNotInjected);
 			});
 
-		return base.CreateHost(builder);
+		var host = base.CreateHost(builder);
+		var openApiDocumentBuilder = host.Services.GetRequiredService<ISwaggerProvider>();
+		OpenApiDocument = openApiDocumentBuilder.GetSwagger("v1");
+
+		return host;
 	}
 
 	public static InMemoryTestServer Create(DeploymentEnvironment deploymentEnvironment = DeploymentEnvironment.Production)

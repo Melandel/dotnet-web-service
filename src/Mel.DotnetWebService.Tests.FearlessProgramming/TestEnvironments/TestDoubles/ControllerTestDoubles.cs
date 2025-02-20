@@ -1,6 +1,8 @@
 ﻿using Mel.DotnetWebService.Api.Controllers;
+using Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.Guids;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static Mel.DotnetWebService.Tests.FearlessProgramming.TestData.Archetypes.ClassArchetype;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles;
 
@@ -60,5 +62,50 @@ static class ControllerTestDoubles
 
 		[HttpGet]
 		public Guid GuidPassThrough(Guid guid) => guid;
+
+		[HttpGet]
+		public Guid NonEmptyGuidPassThrough(NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+
+		[HttpPost]
+		public Guid PostGuidInsideBody([FromBody] Guid guid) => guid;
+		[HttpPost]
+		public Guid[] PostGuidsInsideBody([FromBody] Guid[] guids) => guids;
+		[HttpPost]
+		public NonEmptyGuid PostNonEmptyGuidInsideBody([FromBody] NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+		[HttpPost]
+		public NonEmptyGuid PostNonEmptyGuidInsideQuery([FromQuery] NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+		[HttpPost]
+		public NonEmptyGuid PostNonEmptyGuidInsideRoute([FromRoute] NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+		[HttpPost]
+		public NonEmptyGuid[] PostArrayOfNonEmptyGuidsInsideBody([FromBody] NonEmptyGuid[] arrayOfNonEmptyGuids) => arrayOfNonEmptyGuids;
+		[HttpPost]
+		public List<NonEmptyGuid> PostListOfNonEmptyGuidsInsideBody([FromBody] List<NonEmptyGuid> listOfNonEmptyGuids) => listOfNonEmptyGuids;
+		[HttpPost]
+		public IEnumerable<NonEmptyGuid> PostIenumerableOfNonEmptyGuidsInsideBody([FromBody] IEnumerable<NonEmptyGuid> ienumerableOfNonEmptyGuids) => ienumerableOfNonEmptyGuids;
+
+		[HttpGet]
+		public NonEmptyGuid GetNonEmptyGuidInsideQuery([FromQuery] NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+
+		[HttpGet("{nonEmptyGuid}")]
+		public NonEmptyGuid GetNonEmptyGuidInsideRoute([FromRoute] NonEmptyGuid nonEmptyGuid) => nonEmptyGuid;
+
+		[HttpPost]
+		public PositionalRecordContainingANonEmptyGuid PostPositionalRecordContainingNonEmptyGuidInsideBody([FromBody] PositionalRecordContainingANonEmptyGuid recordContainingNonEmptyGuid) => recordContainingNonEmptyGuid;
+		[HttpPost]
+		public PositionalRecordContainingAnArrayOfNonEmptyGuids PostPositionalRecordContainingAnArrayOfNonEmptyGuidsInsideBody([FromBody] PositionalRecordContainingAnArrayOfNonEmptyGuids recordContainingAnArrayOfNonEmptyGuids) => recordContainingAnArrayOfNonEmptyGuids;
+		[HttpPost]
+		public PositionalRecordContainingAListOfNonEmptyGuids PostPositionalRecordContainingAListOfNonEmptyGuidsInsideBody([FromBody] PositionalRecordContainingAListOfNonEmptyGuids recordContainingAListOfNonEmptyGuids) => recordContainingAListOfNonEmptyGuids;
+		[HttpPost]
+		public PositionalRecordContainingAnIEnumerableOfNonEmptyGuids PostPositionalRecordContainingAnIenumerableOfNonEmptyGuidsInsideBody([FromBody] PositionalRecordContainingAnIEnumerableOfNonEmptyGuids recordContainingAnIEnumerableOfNonEmptyGuids) => recordContainingAnIEnumerableOfNonEmptyGuids;
+
+		[HttpPost]
+		public PositionalRecordContainingANonEmptyGuid[] PostArrayOfNonEmptyGuidInsideBody([FromBody] PositionalRecordContainingANonEmptyGuid[] recordsContainingNonEmptyGuid) => recordsContainingNonEmptyGuid;
+		[HttpPost]
+		public PositionalRecordContainingANonEmptyGuid[] PostArrayOfPositionalRecordsContainingNonEmptyGuidInsideBody([FromBody] PositionalRecordContainingANonEmptyGuid[] recordsContainingNonEmptyGuid) => recordsContainingNonEmptyGuid;
+		[HttpPost]
+		public PositionalRecordContainingANonEmptyGuid[] PostPositionalRecordsContainingNonEmptyGuidInsideBody([FromBody] PositionalRecordContainingANonEmptyGuid[] recordsContainingNonEmptyGuid) => recordsContainingNonEmptyGuid;
+
+		[HttpPost]
+		public PositionalRecordContainingAGuid[] PostPositionalRecordsContainingGuidInsideBody([FromBody] PositionalRecordContainingAGuid[] recordsContainingGuid) => recordsContainingGuid;
 	}
 }
