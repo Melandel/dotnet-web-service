@@ -1,4 +1,5 @@
 ﻿using Mel.DotnetWebService.Api.Concerns.Routing.AttributeRouteTokenReplacement;
+using Mel.DotnetWebService.CrossCuttingConcerns.ConstrainedTypes.StringRepresentation;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace Mel.DotnetWebService.Api.ExtensionMethods;
@@ -8,22 +9,28 @@ static class ServiceCollectionExtensionMethods
 	public static IServiceCollection AddCustomSwaggerGenerator(this IServiceCollection services)
 	{
 		services
-			.AddSwaggerGen()
+			.AddSwaggerGen(opt => opt.UseRootTypeSchemaForConstrainedTypes())
 			.AddVersionedApiExplorer(apiExplorerOptions =>
 			{
 				apiExplorerOptions.GroupNameFormat = "'v'V";
 				apiExplorerOptions.SubstituteApiVersionInUrl = true;
 			})
-			.ConfigureOptions<Concerns.SwaggerUI.ConfigureSwaggerOptions>();
+		.ConfigureOptions<Concerns.SwaggerUI.ConfigureSwaggerOptions>();
 
 		return services;
 	}
 
 	public static IServiceCollection AddCustomControllers(this IServiceCollection services)
 	{
-		services.AddControllers(mvcOptions =>
+		services
+			.AddControllers(mvcOptions =>
+			{
+				mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
+				mvcOptions.ModelBinderProviders.Insert(0, new ConstrainedTypeBinderProvider());
+			})
+		.AddJsonOptions(jsonOptions =>
 		{
-			mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(new KebabCaseParameterTransformer()));
+			jsonOptions.JsonSerializerOptions.Converters.Add(new ConstrainedTypeJsonConverter());
 		});
 		services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ReportApiVersions = true);
 		return services;
