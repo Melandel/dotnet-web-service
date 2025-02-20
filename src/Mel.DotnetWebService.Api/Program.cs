@@ -3,6 +3,7 @@ builder.Services.AddCustomControllersAndCustomApiVersioning();
 builder.Services.AddCustomSwaggerGeneration();
 builder.Services.AddCustomSwaggerUI();
 builder.Services.AddCustomExceptionHandlingCompliantWithRfc9457();
+builder.Services.AddCustomRuntimeValidation();
 
 var app = builder.Build();
 
@@ -19,5 +20,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseCustomControllers();
+
+app.ExecuteRuntimeValidations();
 
 app.Run();

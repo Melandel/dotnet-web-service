@@ -1,0 +1,4 @@
+namespace Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.Serialization.WritingOperations;
+
+
+record ObjectTypeSpecificallyGeneratedForSerializationPurposes(object? Value);
