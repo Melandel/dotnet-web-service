@@ -18,7 +18,7 @@ static class WebApplicationExtensionMethods
 
 	public static WebApplication UseCustomExceptionHandlingCompliantWithRfc9457(this WebApplication app)
 	{
-		app.UseMiddleware<Concerns.ErrorHandling.ErrorResponseRedaction.ReturnProblemDetailsWhenExceptionIsThrown>();
+		app.UseMiddleware<Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction.ReturnProblemDetailsWhenExceptionIsThrown>();
 		return app;
 	}
 }

@@ -12,11 +12,16 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
+  	<InternalsVisibleTo Include="Mel.DotnetWebService.CrossCuttingConcerns" />
     <InternalsVisibleTo Include="Mel.DotnetWebService.Tests.FearlessProgramming" />
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>Mel.DotnetWebService.Tests.FearlessProgramming</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mel.DotnetWebService.CrossCuttingConcerns\Mel.DotnetWebService.CrossCuttingConcerns.csproj" />
   </ItemGroup>
 </Project>

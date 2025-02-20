@@ -1,0 +1,22 @@
+using System.Linq.Expressions;
+using System.Reflection;
+
+namespace Mel.DotnetWebService.CrossCuttingConcerns.Reflection.RuntimeTypeManipulation;
+
+abstract class SimpleCollectionConversionLambdaExpressionBuilder : CollectionConversionCallExpressionBuilder
+{
+	protected abstract MethodInfo OpenGenericToDestinationCollectionMethod { get; }
+	protected override MethodInfo GetClosedGenericToDestinationCollectionMethod(Type destinationCollectionType, Type destinationCollectionItemType)
+	=> OpenGenericToDestinationCollectionMethod.MakeGenericMethod(destinationCollectionItemType);
+
+	protected override MethodCallExpression CallConversionToDestinationCollectionType(Expression sourceCollectionParameter_OrExpressionBuiltSoFar, MethodInfo closedGenericToDestinationCollectionMethod)
+	=> Expression.Call(closedGenericToDestinationCollectionMethod, sourceCollectionParameter_OrExpressionBuiltSoFar);
+
+	protected override MethodCallExpression CallSelectThenToDestinationCollectionType(Expression sourceCollectionParameter_OrExpressionBuiltSoFar, MethodInfo closedGenericSelectMethod, LambdaExpression selectClauseLambda, MethodInfo closedGenericToDestinationCollectionMethod)
+	=> Expression.Call(
+		closedGenericToDestinationCollectionMethod,
+		Expression.Call(
+			closedGenericSelectMethod,
+			sourceCollectionParameter_OrExpressionBuiltSoFar,
+			selectClauseLambda));
+}
