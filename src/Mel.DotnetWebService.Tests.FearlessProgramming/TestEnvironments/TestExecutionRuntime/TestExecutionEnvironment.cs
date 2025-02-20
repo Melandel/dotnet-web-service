@@ -9,7 +9,7 @@ static class TestExecutionEnvironment
 
 	static readonly Lazy<IReadOnlyCollection<Assembly>> _all_known_assemblies = new(
 		() => AppDomain.CurrentDomain.GetAssemblies()
-			.SelectMany(loadedAssembly => loadedAssembly.GetReferencedAssemblies())
+			.SelectMany(loadedAssembly => loadedAssembly.GetReferencedAssemblies().Append(loadedAssembly.GetName()))
 			.Distinct()
 			.Select(referencedAssemblyName =>
 			{

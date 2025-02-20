@@ -1,8 +1,11 @@
-using Mel.DotnetWebService.Api.Concerns.ErrorHandling.ErrorResponseRedaction;
+using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Rfc9457.ErrorResponseRedaction;
 using Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.WebServiceConcerns.ErrorHandling.Rfc9457;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestServers;
 
@@ -12,6 +15,7 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	readonly DeploymentEnvironment _deploymentEnvironment;
 	readonly Lazy<HttpProblemTypeArchetype.Deserializable[]> _httpProblemTypes;
 	public TestFriendlyHttpClient HttpClient => CreateHttpClient();
+	public Microsoft.OpenApi.Models.OpenApiDocument OpenApiDocument { get; private set; }
 	InMemoryTestServer(DeploymentEnvironment deploymentEnvironment)
 	{
 		_httpResponseMessagesByTestId = new Dictionary<string, List<HttpResponseMessage>>();
@@ -43,7 +47,11 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 						WebServiceShould.Implementent_Rfc9457.TestThatSpecificallyRequiresServiceNotInjected);
 			});
 
-		return base.CreateHost(builder);
+		var host = base.CreateHost(builder);
+		var openApiDocumentBuilder = host.Services.GetRequiredService<ISwaggerProvider>();
+		OpenApiDocument = openApiDocumentBuilder.GetSwagger("v1");
+
+		return host;
 	}
 
 	public static InMemoryTestServer Create(DeploymentEnvironment deploymentEnvironment = DeploymentEnvironment.Production)
@@ -80,4 +88,29 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	public HttpProblemType GetHttpProblemTypeByName(string httpProblemTypeName)
 	=> _httpProblemTypes.Value
 		.Single(httpProblemType => httpProblemType.Uri.ToString().EndsWith(httpProblemTypeName));
+
+	public OpenApiOperation GetRouteDocumentation<TController>(string controllerMethod, HttpMethod httpMethod)
+	=> GetRouteDocumentationFromDocumentPath<TController>(
+		$"/{TestFriendlyHttpClient.BuildRequestUri<TController>(controllerMethod)}",
+		httpMethod);
+
+	public OpenApiOperation GetRouteDocumentation<TController>(string controllerMethod, string routeSuffix, HttpMethod httpMethod)
+	=> GetRouteDocumentationFromDocumentPath<TController>(
+		$"/{TestFriendlyHttpClient.BuildRequestUri<TController>(controllerMethod)}{routeSuffix}",
+		httpMethod);
+
+	OpenApiOperation GetRouteDocumentationFromDocumentPath<TController>(string openApiDocumentPath, HttpMethod httpMethod)
+	{
+		var operationType = httpMethod switch
+		{
+			_ when httpMethod == HttpMethod.Delete => OperationType.Delete,
+			_ when httpMethod == HttpMethod.Get => OperationType.Get,
+			_ when httpMethod == HttpMethod.Patch => OperationType.Patch,
+			_ when httpMethod == HttpMethod.Post => OperationType.Post,
+			_ when httpMethod == HttpMethod.Put => OperationType.Put,
+			_ => throw new NotImplementedException()
+		};
+
+		return OpenApiDocument.Paths[openApiDocumentPath].Operations[operationType];
+	}
 }
