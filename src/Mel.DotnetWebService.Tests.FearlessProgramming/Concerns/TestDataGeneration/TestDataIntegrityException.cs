@@ -7,5 +7,8 @@ class TestDataIntegrityException : Exception
 	}
 
 	public static TestDataIntegrityException GeneratedBy(Type testDataGenerationType, string testDataGenerationMember, string details, Exception innerException = null)
-	=> new($"Test data generation {testDataGenerationType.Name}.{testDataGenerationMember} failed: {details}", innerException);
+	=> GeneratedBy(testDataGenerationType.Name, testDataGenerationMember, details, innerException);
+
+	public static TestDataIntegrityException GeneratedBy(string testDataGenerationTypeName, string testDataGenerationMember, string details, Exception innerException = null)
+	=> new($"Test data generation {testDataGenerationTypeName}.{testDataGenerationMember} failed: {details}", innerException);
 }

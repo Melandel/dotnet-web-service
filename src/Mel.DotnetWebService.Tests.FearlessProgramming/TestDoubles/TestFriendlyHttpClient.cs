@@ -23,10 +23,15 @@ internal class TestFriendlyHttpClient
 	}
 
 	public async Task<HttpResponseMessage> DeleteAsync<TController>(string controllerMethodName) => await DeleteAsync(BuildRequestUri<TController>(controllerMethodName));
+	public async Task<HttpResponseMessage> DeleteAsync<TController>(string controllerMethodName, string uriSuffix) => await DeleteAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}");
 	public async Task<HttpResponseMessage> GetAsync<TController>(string controllerMethodName) => await GetAsync(BuildRequestUri<TController>(controllerMethodName));
+	public async Task<HttpResponseMessage> GetAsync<TController>(string controllerMethodName, string uriSuffix) => await GetAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}");
 	public async Task<HttpResponseMessage> PatchAsync<TController>(string controllerMethodName, HttpContent content) => await PatchAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	public async Task<HttpResponseMessage> PatchAsync<TController>(string controllerMethodName, string uriSuffix, HttpContent content) => await PatchAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}", content);
 	public async Task<HttpResponseMessage> PostAsync<TController>(string controllerMethodName, HttpContent content) => await PostAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	public async Task<HttpResponseMessage> PostAsync<TController>(string controllerMethodName, string uriSuffix, HttpContent content) => await PostAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}", content);
 	public async Task<HttpResponseMessage> PutAsync<TController>(string controllerMethodName, HttpContent content) => await PutAsync(BuildRequestUri<TController>(controllerMethodName), content);
+	public async Task<HttpResponseMessage> PutAsync<TController>(string controllerMethodName, string uriSuffix, HttpContent content) => await PutAsync($"{BuildRequestUri<TController>(controllerMethodName)}{uriSuffix}", content);
 	static string BuildRequestUri<TController>(string controllerMethodName)
 	{
 		var routeName = KebabCaseParameterTransformer.RemoveAnyHttpVerbPrefix(controllerMethodName);
