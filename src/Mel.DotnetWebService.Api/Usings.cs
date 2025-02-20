@@ -1,2 +1,2 @@
-global using Mel.DotnetWebService.Api.Concerns.ErrorHandling.Exceptions;
+global using Mel.DotnetWebService.CrossCuttingConcerns.ErrorHandling;
 global using Mel.DotnetWebService.Api.ExtensionMethods;

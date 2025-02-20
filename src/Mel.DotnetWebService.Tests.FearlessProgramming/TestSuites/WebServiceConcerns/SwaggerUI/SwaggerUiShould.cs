@@ -13,14 +13,14 @@ class SwaggerUiShould : TestSuiteUsingTestServer
 		var responseContent = await httpResponse.GetContentAsString();
 
 		// Assert
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(httpResponse.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
 			Assert.That(responseContent, Is.Not.Null);
 			Assert.That(responseContent, Does.Contain("<!DOCTYPE html>"));
 			Assert.That(responseContent, Does.Contain("<title>Swagger UI</title>"));
 			Assert.That(responseContent, Does.Not.Contain("Error when attempting to fetch resource."));
-		});
+		};
 	}
 
 	[TestCaseSource(typeof(WebApiRoutes), nameof(WebApiRoutes.CommonlyUsedAsDefaultRoutes))]
@@ -34,11 +34,11 @@ class SwaggerUiShould : TestSuiteUsingTestServer
 		var responseContent = await httpResponse.GetContentAsString();
 
 		// Assert
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(httpResponse.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Redirect));
 			Assert.That(httpResponse.Headers.GetValues("Location"), Is.EquivalentTo(new[] { swaggerUiUrl }));
-		});
+		};
 	}
 
 	[TestCaseSource(typeof(WebApiRoutes), nameof(WebApiRoutes.InvalidRoutes))]
