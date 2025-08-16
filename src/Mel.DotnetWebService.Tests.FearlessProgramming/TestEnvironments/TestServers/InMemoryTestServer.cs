@@ -1,6 +1,8 @@
 ﻿using Mel.DotnetWebService.Api.Concerns.ErrorHandling;
+using Mel.DotnetWebService.CrossCuttingConcerns.Configurability;
 using Mel.DotnetWebService.Tests.FearlessProgramming.TestSuites.ErrorHandling;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -9,13 +11,13 @@ namespace Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestSe
 class InMemoryTestServer : WebApplicationFactory<Program>
 {
 	readonly Dictionary<string, List<HttpResponseMessage>> _httpResponseMessagesByTestId;
-	readonly DeploymentEnvironment _deploymentEnvironment;
+	readonly Dictionary<string, string> _configurationSettingsOverwrite;
 	readonly Lazy<HttpProblemTypeArchetype.Deserializable[]> _httpProblemTypes;
 	public TestFriendlyHttpClient HttpClient => CreateHttpClient();
-	InMemoryTestServer(DeploymentEnvironment deploymentEnvironment)
+	InMemoryTestServer(Dictionary<string, string> configurationSettingsOverwrite)
 	{
 		_httpResponseMessagesByTestId = new Dictionary<string, List<HttpResponseMessage>>();
-		_deploymentEnvironment = deploymentEnvironment;
+		_configurationSettingsOverwrite = configurationSettingsOverwrite;
 		_httpProblemTypes = new Lazy<HttpProblemTypeArchetype.Deserializable[]>(() =>
 		{
 			var httpProblemTypesAsHttpResponse = HttpClient.GetAsync("api/v1/http-problem-types")
@@ -30,7 +32,7 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 	protected override IHost CreateHost(IHostBuilder builder)
 	{
 		builder
-			.UseEnvironment(_deploymentEnvironment.ToString())
+			.ConfigureHostConfiguration(config => config.AddInMemoryCollection(_configurationSettingsOverwrite))
 			.ConfigureLogging(logging => logging.ClearProviders())
 			.ConfigureServices(services =>
 			{
@@ -46,8 +48,28 @@ class InMemoryTestServer : WebApplicationFactory<Program>
 		return base.CreateHost(builder);
 	}
 
-	public static InMemoryTestServer Create(DeploymentEnvironment deploymentEnvironment = DeploymentEnvironment.Production)
-	=> new InMemoryTestServer(deploymentEnvironment);
+	public static InMemoryTestServer Create(DeploymentEnvironment hostEnvironment = null, Dictionary<string, string> fullConfigurationSettings = null)
+	=> new InMemoryTestServer(BuildConfigurationSettingsOverwrite(hostEnvironment, fullConfigurationSettings));
+
+	static Dictionary<string, string> BuildConfigurationSettingsOverwrite(DeploymentEnvironment hostEnvironment, Dictionary<string, string> fullConfigurationSettings)
+	{
+		var configurationSettingsOverwrite = new Dictionary<string, string>
+		{
+			{ DeploymentEnvironment.ConfigurationSettingKey, hostEnvironment ?? DeploymentEnvironment.Production }
+		};
+
+		if (fullConfigurationSettings is not null)
+		{
+			configurationSettingsOverwrite.Add(nameof(ConfigurationSettingsResolutionStatus), ConfigurationSettingsResolutionStatus.FullyResolved);
+
+			foreach (var kvp in fullConfigurationSettings)
+			{
+				configurationSettingsOverwrite.Add(kvp.Key, kvp.Value);
+			}
+		}
+
+		return configurationSettingsOverwrite;
+	}
 
 	public TestFriendlyHttpClient CreateHttpClient()
 	{
