@@ -73,4 +73,3 @@ static class ServiceCollectionExtensionMethods
 		return services;
 	}
 }
-
