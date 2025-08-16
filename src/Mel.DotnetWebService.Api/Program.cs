@@ -1,5 +1,13 @@
-﻿
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Configuration.HasAlreadyBeenFullyResolved())
+{
+	builder.Configuration.ResolveAllSettings(
+		builder.Environment,
+		"ConfigurationLocationMainIdentifier",
+		"ConfigurationLocationFallbackIdentifier");
+}
+
 builder.Services.AddCustomSerializationSettings();
 builder.Services.AddCustomControllers();
 builder.Services.AddCustomSwaggerGenerator();
