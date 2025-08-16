@@ -1,0 +1,8 @@
+{
+  "Public": {
+    "ExecutableProgramName": "DotnetWebService(Development)"
+  },
+  "Private": {
+	"Foo":  "bar"
+  }
+}
