@@ -70,6 +70,7 @@ public class NonEmptyHashSet<T>
 
 public static class NonEmptyHashSet
 {
+	public static NonEmptyHashSet<T> Empty<T>() => NonEmptyHashSet<T>.Storing(Array.Empty<T>());
 	public static NonEmptyHashSet<T> Storing<T>(IEnumerable<T> elements) => NonEmptyHashSet<T>.Storing(elements);
 	public static NonEmptyHashSet<T> Storing<T>(params T[] elements) => NonEmptyHashSet<T>.Storing(elements);
 }
