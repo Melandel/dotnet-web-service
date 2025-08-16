@@ -1,7 +1,20 @@
+using Mel.DotnetWebService.Api.Concerns.Configurability;
+using Mel.DotnetWebService.CrossCuttingConcerns.Configurability;
+using Mel.DotnetWebService.CrossCuttingConcerns.Configurability.ConfigurationKeyFiltering;
 using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddConstrainedTypes();
+
+if (!builder.Configuration.HasAlreadyBeenFullyResolved())
+{
+	builder.Configuration.ResolveAllSettings(
+		builder.Environment,
+		Integration.SingleConfigurationSettingRedirectingToTheFullConfiguration.ConfigurationLocationMainIdentifier,
+		Integration.SingleConfigurationSettingRedirectingToTheFullConfiguration.ConfigurationLocationFallbackIdentifier,
+		ConfigurationKeyFilters.ExplicitPublicAndImplicitPrivate);
+}
+
 builder.Services.AddCustomSerializationSettings();
 builder.Services.AddCustomControllersAndCustomApiVersioning();
 builder.Services.AddCustomSwaggerGeneration();
