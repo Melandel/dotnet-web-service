@@ -17,6 +17,5 @@ global using Regenerate = Mel.DotnetWebService.Tests.FearlessProgramming.Concern
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestDoubles;
 global using NUnit.Framework;
-global using Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.DeploymentEnvironmentsAwareness;
 global using TestAttribute = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Attributes.TestAttribute;
 global using RetryAttribute = Mel.DotnetWebService.Tests.FearlessProgramming.Concerns.NUnitCustomizations.Attributes.RetryAttribute;
