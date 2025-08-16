@@ -1,0 +1,9 @@
+using Mel.DotnetWebService.CrossCuttingConcerns.Configurability.ConfigurationKeyFiltering;
+using Mel.DotnetWebService.CrossCuttingConcerns.DataValidity.ConstrainedTypes;
+
+namespace Mel.DotnetWebService.CrossCuttingConcerns.Configurability;
+
+public interface IConfigurationSettingsResolver
+{
+	void ResolveAllConfigurationSettings(string? configurationLocationMainIdentifier, string? configurationLocationFallbackIdentifier, NonEmptyHashSet<ConfigurationKeyFilter> configurationKeyFilters);
+}
