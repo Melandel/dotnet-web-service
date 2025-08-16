@@ -7,4 +7,3 @@ public static class StringExtensionMethods
 		? string.Equals(left, right)
 		: string.Equals(left, right, StringComparison.InvariantCultureIgnoreCase);
 }
-
