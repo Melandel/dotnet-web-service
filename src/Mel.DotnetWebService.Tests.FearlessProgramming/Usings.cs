@@ -20,4 +20,3 @@ global using Mel.DotnetWebService.Tests.FearlessProgramming.TestData.TestCases;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestDoubles;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestExecutionRuntime;
 global using Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestServers;
-global using Mel.DotnetWebService.Tests.FearlessProgramming.TestEnvironments.TestSpecificDataStructures;
