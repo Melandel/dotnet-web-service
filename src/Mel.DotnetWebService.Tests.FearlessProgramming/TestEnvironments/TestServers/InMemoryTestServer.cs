@@ -42,7 +42,7 @@ internal class InMemoryTestServer : WebApplicationFactory<Program>
 		{
 			foreach (var httpResponseMessage in httpResponseMessagesInvolvedInTheTest)
 			{
-				TestContext.WriteLine(await httpResponseMessage.Render());
+				TestContext.Out.WriteLine(await httpResponseMessage.Render());
 			}
 		}
 	}
