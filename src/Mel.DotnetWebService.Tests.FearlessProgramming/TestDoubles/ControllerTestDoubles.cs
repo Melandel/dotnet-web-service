@@ -9,7 +9,7 @@ static class ControllerTestDoubles
 	[Route("[controller]")]
 	public class StubbedEndpointsSpecificallyCreatedForTests : ControllerBase
 	{
-		private readonly ILogger<StubbedEndpointsSpecificallyCreatedForTests> _logger;
+		readonly ILogger<StubbedEndpointsSpecificallyCreatedForTests> _logger;
 
 		public StubbedEndpointsSpecificallyCreatedForTests(ILogger<StubbedEndpointsSpecificallyCreatedForTests> logger)
 		{

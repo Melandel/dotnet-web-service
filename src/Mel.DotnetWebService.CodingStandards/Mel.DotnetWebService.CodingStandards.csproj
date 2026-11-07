@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <NoWarn>$(NoWarn);RS2008;RS1038;RS1041</NoWarn>
+
+    <SelfAnalyzerDirectory>$(BaseIntermediateOutputPath)self-analyzer/$(Configuration)/$(TargetFramework)/</SelfAnalyzerDirectory>
+    <SelfAnalyzerIntermediateDirectory>$(BaseIntermediateOutputPath)self-analyzer-obj/$(Configuration)/$(TargetFramework)/</SelfAnalyzerIntermediateDirectory>
+    <SelfAnalyzerPath>$(SelfAnalyzerDirectory)$(AssemblyName).dll</SelfAnalyzerPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="System.Composition.AttributedModel" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" />
+  </ItemGroup>
+
+  <Target Name="BuildSelfAnalyzer" BeforeTargets="CoreCompile" Condition="'$(SelfAnalyzerBootstrap)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Build" BuildInParallel="false" Properties=" SelfAnalyzerBootstrap=true; OutputPath=$(SelfAnalyzerDirectory); IntermediateOutputPath=$(SelfAnalyzerIntermediateDirectory); AppendTargetFrameworkToOutputPath=false; BuildProjectReferences=false" />
+    <Error Condition="!Exists('$(SelfAnalyzerPath)')" Text="Self-analyzer was not generated: $(SelfAnalyzerPath)" />
+
+    <ItemGroup>
+      <Analyzer Include="$(SelfAnalyzerPath)" />
+    </ItemGroup>
+  </Target>
+</Project>
